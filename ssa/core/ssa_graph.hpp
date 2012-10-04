@@ -417,8 +417,8 @@ namespace ssa{
     for (size_t i = 0; i < _edges_data_association_gicp.size(); ++i){
       eset.insert(_edges_data_association_gicp[i]);
     }
-    std::cerr << "SSA p-t-p correspondences       \t " << _edges_data_association.size() << std::endl;
-    std::cerr << "GICP p-t-p correspondences      \t " << _edges_data_association_gicp.size() << std::endl;
+//     std::cerr << "SSA p-t-p correspondences       \t " << _edges_data_association.size() << std::endl;
+//     std::cerr << "GICP p-t-p correspondences      \t " << _edges_data_association_gicp.size() << std::endl;
     std::cerr << "Points keep out of optimization \t " << _edges_points_to_move.size() << std::endl;
     std::cerr << "Number of edges for optimization\t " << eset.size() << std::endl;
 //     std::cerr << PVAR(_edges_points_to_move.size()) << " " << PVAR(eset.size()) << std::endl;

@@ -181,7 +181,9 @@ int main(int argc, char **argv)
         cerr << "optimizing level " << umw.spinBox_2->value() << endl;
         //ssa.optimize(umw.spinBox_2->value());
 	ssa.optimizeHierarchical(ssa.graph()->getMaxLevel()); 
-
+	umw.ssaGLWidget->Gen3DObjectList_update();
+	umw.ssaGLWidget->updateGL();
+	  
         umw.stateLabel->setText(QString("ready"));
         palette.setColor(umw.stateLabel->backgroundRole(), Qt::green);
         umw.stateLabel->setPalette(palette);

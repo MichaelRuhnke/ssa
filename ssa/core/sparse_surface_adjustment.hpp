@@ -126,6 +126,7 @@ namespace ssa{
     if(params().outlierRejectionMinConnectedNeighbors > 1){
       graph()->filterOutlier(params().outlierRejectionMinConnectedNeighbors);
     }
+    graph_.dropDataAssociation();
     cerr << "Computation took " << (get_time() - startTime) * 1000 << " ms" << endl;
   }
 
