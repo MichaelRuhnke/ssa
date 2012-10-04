@@ -1,0 +1,72 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+IF(SSA_BUILD_SUITESPARSE)
+  IF(SSA_USE_G2O_GIT)
+    set(G2O_INSTALL_PREFIX "${ssa_SOURCE_DIR}/EXTERNAL/g2o")
+    MESSAGE("installing g2o in folder " ${G2O_INSTALL_PREFIX})
+    
+    ExternalProject_Add(
+      g2o
+      GIT_REPOSITORY https://github.com/RainerKuemmerle/g2o.git
+      GIT_TAG "master"
+      PREFIX ${G2O_INSTALL_PREFIX}
+      INSTALL_DIR ${G2O_INSTALL_PREFIX}
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${G2O_INSTALL_PREFIX}
+		-DBUILD_CSPARSE=NO
+		-DCHOLMOD_INCLUDE_DIR=${CHOLMOD_INCLUDE_DIR} 
+		-DCHOLMOD_LIBRARY=${CHOLMOD_LIBRARY} 
+		-DCHOLMOD_LIBRARIES=${CHOLMOD_LIBRARIES} 
+		-DCSPARSE_INCLUDE_DIR=${CSPARSE_INCLUDE_DIR}
+		-DCSPARSE_LIBRARY=${CSPARSE_LIBRARY}
+		-DBLAS_LIBRARIES=${BLAS_LIBRARIES} 
+		-DLAPACK_LIBRARIES=${BLAS_LIBRARIES}
+		-DAMD_LIBRARY=${AMD_LIBRARY}
+		-DCAMD_LIBRARY=${CAMD_LIBRARY}
+		-DCOLAMD_LIBRARY=${COLAMD_LIBRARY}
+		-DCCOLAMD_LIBRARY=${CCOLAMD_LIBRARY}
+    )
+  ENDIF(SSA_USE_G2O_GIT)
+  
+ ExternalProject_Add(
+   OpenBLAS2
+   URL http://github.com/xianyi/OpenBLAS/tarball/master/xianyi-OpenBLAS-v0.2.1-0-g551f478.tar.gz
+   DOWNLOAD_DIR ${ssa_SOURCE_DIR}/EXTERNAL/
+   SOURCE_DIR ${ssa_SOURCE_DIR}/EXTERNAL/OpenBLAS2
+   PATCH_COMMAND cp ${ssa_SOURCE_DIR}/EXTERNAL/patches/Makefile.rule ${ssa_SOURCE_DIR}/EXTERNAL/OpenBLAS2/
+   CMAKE_COMMAND true
+   BUILD_IN_SOURCE 1
+   BUILD_COMMAND make && make netlib shared
+   INSTALL_COMMAND true
+ )
+ SET(GOTOBLAS_LIBRARY ${ssa_SOURCE_DIR}/EXTERNAL/OpenBLAS2/OpenBLAS2)
+
+  ExternalProject_Add( 
+    SuiteSparse
+    URL http://www.cise.ufl.edu/research/sparse/SuiteSparse/SuiteSparse-3.6.1.tar.gz
+    DOWNLOAD_DIR ${ssa_SOURCE_DIR}/EXTERNAL/
+    SOURCE_DIR ${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse
+    PATCH_COMMAND cp ${ssa_SOURCE_DIR}/EXTERNAL/patches/UFconfig.mk ${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/UFconfig/
+    CMAKE_COMMAND true
+    BUILD_IN_SOURCE 1
+    BUILD_COMMAND ssa_SOURCE_DIR=${ssa_SOURCE_DIR} make library
+    INSTALL_COMMAND mkdir lib && mkdir include && ssa_SOURCE_DIR=${ssa_SOURCE_DIR} make install
+  )
+
+ELSE(SSA_BUILD_SUITESPARSE)
+
+  IF(SSA_USE_G2O_GIT)
+    set(G2O_INSTALL_PREFIX "${ssa_SOURCE_DIR}/EXTERNAL/g2o")
+    MESSAGE("installing g2o in folder " ${G2O_INSTALL_PREFIX})
+    
+    ExternalProject_Add(
+      g2o
+      GIT_REPOSITORY https://github.com/RainerKuemmerle/g2o.git
+      GIT_TAG "master"
+      PREFIX ${G2O_INSTALL_PREFIX}
+      INSTALL_DIR ${G2O_INSTALL_PREFIX}
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${G2O_INSTALL_PREFIX}
+		-DBUILD_CSPARSE=NO
+    )
+  ENDIF(SSA_USE_G2O_GIT)
+  
+ENDIF(SSA_BUILD_SUITESPARSE)

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/ruhnke-ssa/!svn/ver/111/branch/cmake_modules/FindCUDA
+END
+parse_cubin.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/ruhnke-ssa/!svn/ver/111/branch/cmake_modules/FindCUDA/parse_cubin.cmake
+END
+run_nvcc.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/ruhnke-ssa/!svn/ver/111/branch/cmake_modules/FindCUDA/run_nvcc.cmake
+END
+make2cmake.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/ruhnke-ssa/!svn/ver/111/branch/cmake_modules/FindCUDA/make2cmake.cmake
+END
