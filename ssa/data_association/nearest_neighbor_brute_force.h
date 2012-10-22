@@ -22,6 +22,12 @@
 #include "ssa/core/parameter.h"
 #include "correspondence.h"
 #include "correspondence_rejection.h"
+#ifdef _OPENMP
+    #include <omp.h>
+#else
+    #define omp_get_num_threads() 0
+    #define omp_get_thread_num() 0
+#endif
 
 namespace ssa {
 
