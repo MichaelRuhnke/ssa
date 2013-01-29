@@ -18,6 +18,7 @@
 #define __SSA_DA_BRUTE_FORCE_T__
 
 #include <vector>
+#include <tr1/unordered_map> 
 #include "ssa/core/ssa_graph.h"
 #include "ssa/core/parameter.h"
 #include "correspondence.h"

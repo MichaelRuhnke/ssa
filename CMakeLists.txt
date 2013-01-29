@@ -7,7 +7,7 @@ PROJECT(ssa)
 SET(LIB_PREFIX ssa_)
 
 SET(ssa_C_FLAGS)
-SET(ssa_CXX_FLAGS "-std=c++0x")
+SET(ssa_CXX_FLAGS)
 
 # default built type
 IF(NOT CMAKE_BUILD_TYPE)

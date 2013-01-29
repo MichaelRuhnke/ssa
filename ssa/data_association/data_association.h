@@ -18,7 +18,7 @@
 #define __SSA_DATA_ASSOCIATION__
 
 #include <vector>
-#include <unordered_map> 
+#include <tr1/unordered_map> 
 /** graph and param struct */
 #include "ssa/core/parameter.h"
 #include "ssa/core/ssa_graph.h"

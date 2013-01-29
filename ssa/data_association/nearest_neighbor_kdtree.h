@@ -20,6 +20,7 @@
 #include <vector>
 #include "ssa/kdtree_flann/kdtree_flann.h"
 #include "nearest_neighbor_brute_force.h"
+#include <tr1/unordered_map> 
 
 namespace ssa {
 
