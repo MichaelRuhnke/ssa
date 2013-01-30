@@ -163,7 +163,7 @@ ENDIF(SSA_BUILD_APPS)
 # ENDIF(G2O_BUILD_EXAMPLES)
 
 
-find_package(PCL 1.2 REQUIRED)
+find_package(PCL 1.6 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
