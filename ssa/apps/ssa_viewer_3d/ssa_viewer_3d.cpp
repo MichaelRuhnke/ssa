@@ -180,7 +180,7 @@ int main(int argc, char **argv)
         ssa.params().printParams();
         cerr << "optimizing level " << umw.spinBox_2->value() << endl;
         //ssa.optimize(umw.spinBox_2->value());
-	ssa.optimizeHierarchical(ssa.graph()->getMaxLevel()); 
+	ssa.optimize(ssa.graph()->getMaxLevel());
 	umw.ssaGLWidget->Gen3DObjectList_update();
 	umw.ssaGLWidget->updateGL();
 	  
