@@ -167,6 +167,7 @@ namespace ssa {
 
     /** Optimizer */
     SSASparseOptimizer _optimizer;
+    SSASparseOptimizer*   optimizer() { return &_optimizer;};
 
     /** Direct access to differnt edgetypes */
   

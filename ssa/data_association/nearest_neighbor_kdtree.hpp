@@ -28,7 +28,7 @@ template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
 void 
 NearestNeighborKdtreeT<EdgeType1, EdgeType2, EdgeType3>::apply(ScanPairVector scanPairs, CorrespondenceList& resultingCorrespondences, SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>& graph, SparseSurfaceAdjustmentParams& params, int level = 0)
 {
-//   double timing = get_time();
+  double timing = get_time();
   /** construct correspondence lists for every thread, for parallel filling */
   std::vector< CorrespondenceList > correspondencesPerThread;
   correspondencesPerThread.resize(params.maxThreads);
@@ -43,6 +43,7 @@ NearestNeighborKdtreeT<EdgeType1, EdgeType2, EdgeType3>::apply(ScanPairVector sc
   int numKdTreeThreads = 4; ///more threads makes no sense from a performance point of view ;) 
   if(params.maxThreads < numKdTreeThreads)
     numKdTreeThreads = params.maxThreads;
+  
   std::vector<int>  indices = graph.getPoseIds();
   std::tr1::unordered_map<int, PointTree> kdTrees;
   #pragma omp parallel for schedule(dynamic) shared(graph, indices, params, level, kdTrees) num_threads(numKdTreeThreads) 
@@ -55,8 +56,8 @@ NearestNeighborKdtreeT<EdgeType1, EdgeType2, EdgeType3>::apply(ScanPairVector sc
     kdTrees[id1].createKDTree();
   }
 
-//   std::cerr << "NearestNeighborKdtreeT pre calculation took " << (get_time() - timing) * 1000.0 << "ms." << std::endl;
-//   timing = get_time();
+  std::cerr << "NearestNeighborKdtreeT pre calculation took " << (get_time() - timing) * 1000.0 << "ms with " << numKdTreeThreads << " threads." << std::endl;
+  timing = get_time();
   #pragma omp parallel for schedule(dynamic) shared(graph, params, level, sqrDistance, kdTrees) num_threads(params.maxThreads) firstprivate(k_indices, k_squared_distances)
   for(int j = 0; j < (int) scanPairs.size(); ++j)
   {

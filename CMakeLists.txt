@@ -164,7 +164,7 @@ ENDIF(SSA_BUILD_APPS)
 
 
 find_package(PCL 1.6 REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
+include_directories(SYSTEM ${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
