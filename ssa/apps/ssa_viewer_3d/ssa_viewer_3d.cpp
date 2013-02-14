@@ -179,10 +179,10 @@ int main(int argc, char **argv)
         ssa.params().normalShooting.maxAngleDifference = umw.doubleSpinBox_5->value();
         ssa.params().printParams();
         cerr << "optimizing level " << umw.spinBox_2->value() << endl;
-        //ssa.optimize(umw.spinBox_2->value());
-	ssa.optimize(ssa.graph()->getMaxLevel());
-	umw.ssaGLWidget->Gen3DObjectList_update();
-	umw.ssaGLWidget->updateGL();
+        ssa.optimize(umw.spinBox_2->value());
+        //ssa.optimize(ssa.graph()->getMaxLevel());
+        umw.ssaGLWidget->Gen3DObjectList_update();
+        umw.ssaGLWidget->updateGL();
 	  
         umw.stateLabel->setText(QString("ready"));
         palette.setColor(umw.stateLabel->backgroundRole(), Qt::green);
