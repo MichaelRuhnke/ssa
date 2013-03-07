@@ -46,11 +46,11 @@ namespace ssa {
   template <typename PointVertex, typename DataAssociationEdgeType>
   CorrespondenceT<PointVertex, DataAssociationEdgeType>::CorrespondenceT(PointVertex* query, PointVertex* correspondence, double distance) : query_point(query), cor_point(correspondence), sqrDistance(distance), changed(true), edge(0)
   { 
-    if(query && correspondence){
-      double dist = (query->estimate() - correspondence->estimate()).squaredNorm();
-      if(fabs(dist-distance) > 1e-7)
-        std::cerr << "Provided distance does not match true point pair distance! " << fabs(dist-distance) << std::endl;
-    }
+//     if(query && correspondence){
+//       double dist = (query->estimate() - correspondence->estimate()).squaredNorm();
+//       if(fabs(dist-distance) > 1e-7)
+//         std::cerr << "Provided distance does not match true point pair distance! " << fabs(dist-distance) << std::endl;
+//     }
   };
   
 

@@ -442,14 +442,10 @@ void SSA3DglWidget::drawVertices(){
     std::vector<ssa::VertexPointXYZCov* > vertices = _ssa_graph->getPointVertices(indices[i], _level);
     for (std::vector<ssa::VertexPointXYZCov*>::const_iterator it=vertices.begin(); it!=vertices.end(); it++){
       ssa::VertexPointXYZCov* v=(*it);
-      if(v){
-        if(v->covariance() == Eigen::Matrix3d::Identity())
-          continue;
-        glColor3ub(v->cr, v->cg, v->cb);
-        glBegin(GL_POINTS);
-          glVertex3f(v->estimate()(0),v->estimate()(1), v->estimate()(2));
-        glEnd();
-      }
+      glColor3ub(v->cr, v->cg, v->cb);
+      glBegin(GL_POINTS);
+        glVertex3f(v->estimate()(0),v->estimate()(1), v->estimate()(2));
+      glEnd();
     }
 
   }
@@ -546,13 +542,13 @@ void SSA3DglWidget::Gen3DObjectList_update()
 {
   glDeleteLists(_poseVertices, 1);
   glDeleteLists(_obsVertices, 1);
-  glDeleteLists(_normals, 1);
-  glDeleteLists(_mesh, 1);
+//   glDeleteLists(_normals, 1);
+//   glDeleteLists(_mesh, 1);
 
   _poseVertices = Gen3DObjectList_poseVertices();
   _obsVertices = Gen3DObjectList_obsVertices();
-  _normals = Gen3DObjectList_normals();
-  _mesh = Gen3DObjectList_mesh();
+//   _normals = Gen3DObjectList_normals();
+//   _mesh = Gen3DObjectList_mesh();
 }
 
 void SSA3DglWidget::Gen3DObjectList_updateSelection()

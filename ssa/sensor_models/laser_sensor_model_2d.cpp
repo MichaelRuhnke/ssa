@@ -58,7 +58,7 @@ namespace ssa{
   LaserSensorModel2D::getCovarianceForPoint(Eigen::Vector2d& beam, double& beamAngle, double& angle, LaserSensorParams& params)
   {
     double k11 = params.scale;
-    double k22 = params.scale;
+    //double k22 = params.scale;
 
     //diameter of the beam traversal region
     double d = (tan(params.angularResolution * 0.5) * beam.norm());

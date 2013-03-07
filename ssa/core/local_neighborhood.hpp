@@ -67,7 +67,7 @@ typename LocalNeighborhoodT<VertexType>::PointVector LocalNeighborhoodT<VertexTy
 template <typename VertexType>
 typename LocalNeighborhoodT<VertexType>::PointMatrix LocalNeighborhoodT<VertexType>::getCovariance(int id, SparseSurfaceAdjustmentParams& params){
   PointMatrix cov = PointMatrix::Identity(); 
-  getCovariance(id, cov);
+  getCovariance(id, cov, params);
   return cov;
 }
   

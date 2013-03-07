@@ -56,7 +56,25 @@ namespace ssa {
   }
 
   void VertexPointXYCov::updateNormal(Eigen::Matrix2d& cov){
-    std::cerr << __PRETTY_FUNCTION__ << ": Warning 2d support brocken until this function is implemented! " << std::endl;
+    Matrix2d eigvectors;
+    Vector2d eigvalues;
+    Eigen::EigenSolver<Matrix2d> solv(cov);
+    eigvectors = solv.eigenvectors().real();
+    eigvalues = solv.eigenvalues().real();
+    
+    if(eigvalues(1) <= eigvalues(0)){
+      _normal = Vector2d(eigvectors(0,1), eigvectors(1,1));
+    } else {
+      _normal = Vector2d(eigvectors(0,0), eigvectors(1,0));
+    }
+    
+    ///check direction of normal
+    Vector2d laserPoint(_estimate[0], _estimate[1]);
+    Vector2d robotPose(parentVertex()->estimate()[0], parentVertex()->estimate()[1]);
+
+    if((laserPoint - robotPose).normalized().dot(_normal) > 0){
+      _normal = -_normal;
+    }
   }
       
   Vector2d& VertexPointXYCov::normal(){
@@ -82,6 +100,8 @@ namespace ssa {
       if((laserPoint - robotPose).normalized().dot(_normal) > 0){
         _normal = -_normal;
       }
+      Eigen::Rotation2Dd rot(parentVertex()->estimate()[2]);
+      _normal = rot * _normal;
       _hasNormal = true;
     }
     return _normal;

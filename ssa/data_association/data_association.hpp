@@ -60,7 +60,9 @@ DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::apply(SparseSurfaceAdjustment
   }
   std::cerr << "assignment map computation took " << (get_time() - timing) << "ms. " << std::endl;
 
+  #ifdef __SPARSE_SURFACE_ADJUSTMENT_GRAPH_3D__
   if(level < 1){
+  #endif
     timing = get_time();
     //#pragma omp parallel for shared(graph, scanA, correspondences, params) firstprivate(k_indices, k_squared_distances) num_threads(2)   
     for(int i = 0; i < (int) correspondences.size();  ++i)
@@ -88,7 +90,8 @@ DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::apply(SparseSurfaceAdjustment
       }
     }
     std::cerr << "edge creation took " << (get_time() - timing) << "ms. " << std::endl;
-
+    
+    #ifdef __SPARSE_SURFACE_ADJUSTMENT_GRAPH_3D__
   } else {
 //      std::cerr << "linking level " << level << " with gicp edges..." << std::endl;
     for(int i = 0; i < (int) correspondences.size();  ++i)
@@ -131,8 +134,9 @@ DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::apply(SparseSurfaceAdjustment
           graph.addEdge(e);
         }
       }
-    }
+    }    
   }
+  #endif
 }
 
 template <typename EdgeType1, typename EdgeType2, typename EdgeType3>

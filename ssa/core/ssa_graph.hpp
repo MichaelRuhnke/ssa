@@ -1163,6 +1163,7 @@ namespace ssa{
           std::cerr << "Error: NEGATIVE INFORMATION MATRIX... THIS SHOULD NOT HAPPEN..." << std::endl;
           std::cerr << "SLAMEdgeType " << chi2 << "\t";
           std::cerr << e1->information() << std::endl;
+          e1->information().setIdentity();
           //exit(-1);
         }
         //cerr << e1->vertices()[0]->id() <<  " " << e1->vertices()[1]->id() << std::endl;
@@ -1173,7 +1174,8 @@ namespace ssa{
           if(chi2 < 0.0){
             std::cerr << "Error: NEGATIVE INFORMATION MATRIX... THIS SHOULD NOT HAPPEN..." << std::endl;
             std::cerr << "SensorEdgeType " << chi2 << "\t";
-            std::cerr << e2->information() << std::endl;
+            e2->information().setIdentity();
+            //std::cerr << e2->information() << std::endl;
             //exit(-1);
           }
 //           if(e2->level() != 0)
@@ -1185,8 +1187,9 @@ namespace ssa{
             chi2 = e3->chi2();
             if(chi2 < 0.0){
               std::cerr << "Error: NEGATIVE INFORMATION MATRIX... THIS SHOULD NOT HAPPEN..." << std::endl;
-              std::cerr << "SensorEdgeType " << chi2 << "\t";
-              std::cerr << e3->information() << std::endl;
+              std::cerr << "DataAssociationEdge " << chi2 << "\t";
+              //std::cerr << e3->information() << std::endl;
+              e3->information().setIdentity();
               //exit(-1);
             }
             //cerr << e3->vertices()[0]->id() <<  " " << e3->vertices()[1]->id() << std::endl;
