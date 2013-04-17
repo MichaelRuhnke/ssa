@@ -38,7 +38,7 @@ namespace ssa {
     **/  
 //     Matrix3d transform = ( l1->parentVertex()->estimate().inverse() *  l2->parentVertex()->estimate() ).matrix().topLeftCorner<3,3>();
 //     information() = ( l1->covariance() + l2->covariance() ).inverse(); ///THIS SHOULD BE RIGHT after changing covariances to local frame
-    information() = l1->covariance().inverse() + l2->covariance().inverse();
+    information() = (l1->covariance().inverse() + l2->covariance().inverse()) ;
 
     if(chi2() < 0.0){
       std::cerr << PVAR(chi2()) << " " <<  l1->covariance().inverse() << " " <<  l2->covariance().inverse() << " " << std::endl;

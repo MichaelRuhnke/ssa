@@ -95,7 +95,7 @@ namespace ssa{
       /// Estimate data association
       timing = get_time();
         graph_.dropDataAssociation();
-	/// use new abstract data association
+      /// use new abstract data association
         DataAssociationT<EdgeType1, EdgeType2, EdgeType3> da_kdtree;
         da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE);
         da_kdtree.apply(graph_, params(), level);
@@ -141,4 +141,65 @@ namespace ssa{
     matrix.close();
   }
 
+  template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
+  void SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::optimizeColorsIncidenteWeight()
+  {
+    for(int i = 0; i < (int) graph()->_verticies_points.size(); ++i){
+      PointVertex* point = graph()->_verticies_points[i];
+      std::vector<PointVertex* > neighborhood;
+      double totalWeight = 0;
+      double r = 0; //point->cr;
+      double g = 0; //point->cg;
+      double b = 0; //point->cb;
+      
+      //find neighborhood
+      for (g2o::OptimizableGraph::EdgeSet::iterator it=point->edges().begin(); it!=point->edges().end(); it++){
+        EdgeType3* edge=dynamic_cast<EdgeType3*>(*it);
+        if(edge){
+          PointVertex* vp1=dynamic_cast<PointVertex*>(edge->vertices()[0]);
+          PointVertex* vp2=dynamic_cast<PointVertex*>(edge->vertices()[1]);
+          if(point->id() != vp1->id()){
+            neighborhood.push_back(vp1);
+          }
+          if(point->id() != vp2->id()){
+            neighborhood.push_back(vp2);
+          }
+        }
+      }
+      
+      ///Add weighted color values
+      for(size_t j = 0; j < neighborhood.size(); ++j){
+        PointVertex*& n = neighborhood[j];
+        ///find sensor edge and calculate incidence angle
+        PoseVertex* nParent =  n->parentVertex();
+        PointVector beam = nParent->estimate().translation() - n->estimate();
+        double incidenceAngle = fabs(acos(beam.dot(n->normal())));
+        double weight = 1.0; // - (incidenceAngle / (M_PI * 0.5));
+//         weight = min(weight, 0.0);
+//         weight *= weight;
+//         if(RAD2DEG(incidenceAngle) > 60.0)
+//           weight = 0.0;
+        r += n->cr * weight;
+        g += n->cg * weight;
+        b += n->cb * weight;
+        totalWeight += weight;
+      }
+      
+      //set colors
+      if(neighborhood.size() > 1){
+        point->cr = r / totalWeight;
+        point->cg = g / totalWeight;
+        point->cb = b / totalWeight;
+        for(size_t j = 0; j < neighborhood.size(); ++j){
+          PointVertex*& n = neighborhood[j];
+          n->cr = point->cr;
+          n->cg = point->cg;
+          n->cb = point->cb;
+        }
+      }
+    }
+  }
+  
 } //end namespace
+
+

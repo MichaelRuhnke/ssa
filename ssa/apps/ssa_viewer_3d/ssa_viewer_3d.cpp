@@ -24,6 +24,7 @@
 #include "ssa/core/ssa_graph_3d.h"
 #include "ssa/core/sparse_surface_adjustment.h"
 #include "ssa/data_association/local_refinement.h"
+#include "ssa/data_association/representative_subset.h"
 //#include "ssa/solvers/pcg_cuda/linear_solver_pcg_cuda.h"
 // #include "ssa/solvers/pcg_cusp/linear_solver_pcg_cusp.h"
 
@@ -210,12 +211,28 @@ int main(int argc, char **argv)
        if(umw.ssaGLWidget->_solveDA){
           umw.ssaGLWidget->_solveDA = false;
 
-
-        ssa.graph()->dropDataAssociation();
-        DataAssociationT<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov> da_kdtree;
-        da_kdtree.setStrategy(DataAssociationT<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov>::KDTREE);
-        da_kdtree.apply(*ssa.graph(), ssa.params(), umw.spinBox_2->value());
-
+	  std::cerr << "create subset \t";
+	  RepresentativeSubsetT<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov> subset;
+	  subset.createSubset(ssa.graph(), ssa.params());
+	  umw.ssaGLWidget->Gen3DObjectList_update();
+          umw.ssaGLWidget->updateGL();
+	  std::cerr << "done" << std::endl;;	  
+	  
+//         ssa.graph()->calcMeanCov(ssa.params());
+//         ssa.graph()->dropDataAssociation();
+//         DataAssociationT<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov> da_kdtree;
+//         da_kdtree.setStrategy(DataAssociationT<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov>::KDTREE);
+//         da_kdtree.apply(*ssa.graph(), ssa.params(), 0);
+// 
+//         std::cerr << "Filter outlier...";
+//         ssa.graph()->filterOutlier(ssa.params().outlierRejectionMinConnectedNeighbors);
+//         std::cerr << "done" << std::endl;
+//         std::cerr << "optimize color...";
+//         ssa.optimizeColorsIncidenteWeight();
+//         std::cerr << "done" << std::endl;
+//         umw.ssaGLWidget->Gen3DObjectList_update();
+//         ssa.graph()->dropDataAssociation();
+        
 //           if(ssa.graph()->_edges_data_association.size() == 0){
 //           
 //             //filling selected gui params into ssa params

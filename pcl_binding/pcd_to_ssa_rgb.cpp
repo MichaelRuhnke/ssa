@@ -104,7 +104,7 @@ int main(int argc, char **argv)
   PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGB> >  pclToSSA;
   //pclToSSA.setInput(&clouds);
   pclToSSA.setSensor(PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGB> >::KINECT);
-  pclToSSA.setLevels(3);
+  pclToSSA.setLevels(5);
   pclToSSA.setResolution(0, 0.001);
   pclToSSA.setResolution(1, 0.005);
   pclToSSA.setResolution(2, 0.01);

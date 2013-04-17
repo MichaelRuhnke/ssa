@@ -442,10 +442,14 @@ void SSA3DglWidget::drawVertices(){
     std::vector<ssa::VertexPointXYZCov* > vertices = _ssa_graph->getPointVertices(indices[i], _level);
     for (std::vector<ssa::VertexPointXYZCov*>::const_iterator it=vertices.begin(); it!=vertices.end(); it++){
       ssa::VertexPointXYZCov* v=(*it);
-      glColor3ub(v->cr, v->cg, v->cb);
-      glBegin(GL_POINTS);
-        glVertex3f(v->estimate()(0),v->estimate()(1), v->estimate()(2));
-      glEnd();
+      if(v){
+        if(v->covariance() == Eigen::Matrix3d::Identity())
+          continue;
+        glColor3ub(v->cr, v->cg, v->cb);
+        glBegin(GL_POINTS);
+          glVertex3f(v->estimate()(0),v->estimate()(1), v->estimate()(2));
+        glEnd();
+      }
     }
 
   }

@@ -139,7 +139,7 @@ template <typename PointCloudType>
         PointCloudType tmpCloud;
         sor.filter(tmpCloud);
 
-	for(size_t j=0; j < tmpCloud.size(); ++j){
+        for(size_t j=0; j < tmpCloud.size(); ++j){
 
           Eigen::Vector3f point = pose * tmpCloud[j].getVector3fMap();
           kDTree.nearestKSearch(point, 1, k_indices, k_squared_distances);

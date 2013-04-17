@@ -364,7 +364,7 @@
              <item row="10" column="0">
               <widget class="QPushButton" name="pushButton_3">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="maximumSize">
                 <size>
@@ -373,7 +373,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>Solve DA</string>
+                <string>Optimize Color</string>
                </property>
                <property name="shortcut">
                 <string>O</string>
@@ -426,7 +426,7 @@
      <x>0</x>
      <y>0</y>
      <width>842</width>
-     <height>27</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -80,12 +80,12 @@ NearestNeighborKdtreeT<EdgeType1, EdgeType2, EdgeType3>::apply(ScanPairVector sc
       } 
     }
   }
-//   std::cerr << "NearestNeighborKdtreeT calculation took " << (get_time() - timing) * 1000.0 << "ms." << std::endl;
-//   timing = get_time();
+  std::cerr << "NearestNeighborKdtreeT calculation took " << (get_time() - timing) * 1000.0 << "ms." << std::endl;
+  timing = get_time();
   ///merge results into single list
   for(size_t i = 0; i <  correspondencesPerThread.size(); ++i)
   {
     copy (correspondencesPerThread[i].begin(),correspondencesPerThread[i].end(),back_inserter(resultingCorrespondences));
   }
-//   std::cerr << "NearestNeighborKdtreeT result merging took " << (get_time() - timing) * 1000.0 << "ms." << std::endl;
+  std::cerr << "NearestNeighborKdtreeT result merging took " << (get_time() - timing) * 1000.0 << "ms." << std::endl;
 }

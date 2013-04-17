@@ -126,6 +126,7 @@ namespace ssa {
     int     outlierRejectionMinConnectedNeighbors;
     bool    optimizeColors;
     int     maxThreads;
+    double  targetResolution;
 
     /** Normal shooting stuff */
     NormalShootingParams    normalShooting;
@@ -144,6 +145,7 @@ namespace ssa {
       outlierRejectionMinConnectedNeighbors = 1;
       optimizeColors = false;
       maxThreads = 1;
+      targetResolution = 0.002;
     }
 
     inline void printParams(){
@@ -157,6 +159,7 @@ namespace ssa {
       std::cerr << PVAR(outlierRejectionMinConnectedNeighbors) << std::endl;
       std::cerr << PVAR(optimizeColors) << std::endl;
       std::cerr << PVAR(maxThreads) << std::endl;
+      std::cerr << PVAR(targetResolution) << std::endl;      
 
       normalShooting.printParams();
       nearestNeighbor.printParams();
@@ -189,7 +192,8 @@ namespace ssa {
           in >> optimizeColors;
         if(field == "maxThreads")
           in >> maxThreads;
-
+        if(field == "targetResolution")
+          in >> targetResolution;
 
         /** NormalShootingParams */
         if(field == "normalShooting.maxSearchDistance")
@@ -240,6 +244,7 @@ namespace ssa {
       out << "outlierRejectionMinConnectedNeighbors " << outlierRejectionMinConnectedNeighbors << std::endl;
       out << "optimizeColors " << optimizeColors << std::endl;
       out << "maxThreads " << maxThreads << std::endl;
+      out << "targetResolution " << targetResolution << std::endl;            
 
       /** NormalShootingParams */
       out << "normalShooting.maxSearchDistance " << normalShooting.maxSearchDistance << std::endl;
