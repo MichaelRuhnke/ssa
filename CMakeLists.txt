@@ -26,7 +26,7 @@ SET(CMAKE_MINSIZEREL_POSTFIX "_s" CACHE STRING "postfix applied to minimium-size
 # avoid the problem of loading both the built and installed versions
 # of the shared targets
 IF(APPLE)
-  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
   SET(CMAKE_INSTALL_RPATH "")
 ENDIF(APPLE)
 
@@ -68,12 +68,12 @@ IF(SSA_BUILD_SUITESPARSE)
 
     SET(CHOLMOD_INCLUDE_DIR "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/include" CACHE STRING "Suitesparse include dirs" FORCE)
     SET(CHOLMOD_LIBRARY "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/CHOLMOD/Lib/libcholmod.a" CACHE STRING "Path of cholmod library" FORCE)
-    SET(CSPARSE_INCLUDE_DIR "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/include" CACHE STRING "Cxsparse include dir" FORCE) 
+    SET(CSPARSE_INCLUDE_DIR "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/include" CACHE STRING "Cxsparse include dir" FORCE)
     SET(CSPARSE_LIBRARY "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/lib/libcxsparse.a" CACHE STRING "Path of cxsparse library" FORCE)
     SET(BLAS_LIBRARIES "${ssa_SOURCE_DIR}/EXTERNAL/OpenBLAS2/libopenblas.so" CACHE STRING "Path of BLAS library"  FORCE)
     SET(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY} ${CAMD_LIBRARY} ${COLAMD_LIBRARY} ${CCOLAMD_LIBRARY} ${BLAS_LIBRARIES} CACHE STRING "Paths to cholmod" FORCE)
   ENDIF(UNIX)
-  IF(WIN32) 
+  IF(WIN32)
     SET(AMD_LIBRARY ${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/lib/libamd.lib CACHE STRING "Path to amd library" FORCE)
     SET(CAMD_LIBRARY "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/CAMD/Lib/libcamd.lib" CACHE STRING "Path of camd library" FORCE)
     SET(COLAMD_LIBRARY "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/lib/libcolamd.lib" CACHE STRING "Path of colamd library" FORCE)
@@ -81,11 +81,11 @@ IF(SSA_BUILD_SUITESPARSE)
 
     SET(CHOLMOD_INCLUDE_DIR "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/include" CACHE STRING "Suitesparse include dirs" FORCE)
     SET(CHOLMOD_LIBRARY "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/CHOLMOD/Lib/libcholmod.lib" CACHE STRING "Path of cholmod library" FORCE)
-    SET(CSPARSE_INCLUDE_DIR "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/include" CACHE STRING "Cxsparse include dir" FORCE) 
+    SET(CSPARSE_INCLUDE_DIR "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/include" CACHE STRING "Cxsparse include dir" FORCE)
     SET(CSPARSE_LIBRARY "${ssa_SOURCE_DIR}/EXTERNAL/SuiteSparse/lib/libcxsparse.lib" CACHE STRING "Path of cxsparse library" FORCE)
     SET(BLAS_LIBRARIES "${ssa_SOURCE_DIR}/EXTERNAL/OpenBLAS2/libopenblas.dll" CACHE STRING "Path of BLAS library"  FORCE)
     SET(CHOLMOD_LIBRARIES ${CHOLMOD_LIBRARY} ${AMD_LIBRARY} ${CAMD_LIBRARY} ${COLAMD_LIBRARY} ${CCOLAMD_LIBRARY} ${BLAS_LIBRARIES} CACHE STRING "Paths to cholmod" FORCE)
-  ENDIF(WIN32) 
+  ENDIF(WIN32)
 
 ELSE(SSA_BUILD_SUITESPARSE)
   FIND_PACKAGE(SuiteSparse)
@@ -101,7 +101,7 @@ IF(OPENMP_FOUND AND SSA_USE_OPENMP)
   MESSAGE(STATUS "Compiling with OpenMP support")
 ENDIF(OPENMP_FOUND AND SSA_USE_OPENMP)
 
-# FIND OR CHECKOUT G2O 
+# FIND OR CHECKOUT G2O
 SET( SSA_USE_G2O_GIT ON CACHE BOOL "Download and build G2O from git (EXPERIMENTAL)")
 IF(SSA_USE_G2O_GIT)
   MESSAGE(STATUS "Will checkout g2o git repository")
@@ -163,7 +163,7 @@ ENDIF(SSA_BUILD_APPS)
 # ENDIF(G2O_BUILD_EXAMPLES)
 
 
-find_package(PCL 1.6 REQUIRED)
+find_package(PCL 1.5 REQUIRED)
 include_directories(SYSTEM ${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -177,18 +177,18 @@ include_directories("/usr/include/openni")
 # Compiler specific options for gcc
 IF(CMAKE_COMPILER_IS_GNUCXX)
   # Generic settings for optimisation
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -msse2") 
-  SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -msse2") 
+  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -msse2")
+  SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -msse2")
 
   # OS X
   #IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}") 
-    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}") 
+    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
   #ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Linux
   IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native") 
-    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native") 
+    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
   ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # activate warnings !!!
   SET(ssa_C_FLAGS "${ssa_C_FLAGS} -Wall -W")

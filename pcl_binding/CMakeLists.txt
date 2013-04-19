@@ -19,11 +19,11 @@ ADD_EXECUTABLE(pcd_to_ssa_rgb
 
 TARGET_LINK_LIBRARIES(pcd_to_ssa_rgb  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
 
-ADD_EXECUTABLE(ply_to_ssa_rgb
-  ply_to_ssa_rgb.cpp
-)
+#ADD_EXECUTABLE(ply_to_ssa_rgb
+  #ply_to_ssa_rgb.cpp
+#)
 
-TARGET_LINK_LIBRARIES(ply_to_ssa_rgb  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
+#TARGET_LINK_LIBRARIES(ply_to_ssa_rgb  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
 
 
 ADD_EXECUTABLE(ssa_to_pcd
