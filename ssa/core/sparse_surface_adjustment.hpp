@@ -1,23 +1,23 @@
-// Sparse Surface Optimization 
+// Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ssa{
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::SparseSurfaceAdjustmentT() 
+  SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::SparseSurfaceAdjustmentT()
   {
 
   }
@@ -29,14 +29,14 @@ namespace ssa{
   }
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  void 
+  void
   SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::setGraph(SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::SSAGraph& graph)
   {
     graph_ = graph;
   }
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  typename SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::SSAGraph* 
+  typename SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::SSAGraph*
   SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::graph()
   {
     return &graph_;
@@ -71,7 +71,7 @@ namespace ssa{
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
   void SparseSurfaceAdjustmentT<EdgeType1, EdgeType2, EdgeType3>::optimizeHierarchical(int startLevel)
-  { 
+  {
     for(int i = startLevel; i >= 0; --i)
       optimize(i);
   }
@@ -97,15 +97,26 @@ namespace ssa{
         graph_.dropDataAssociation();
       /// use new abstract data association
         DataAssociationT<EdgeType1, EdgeType2, EdgeType3> da_kdtree;
-        da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE);
+
+	da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE);
         da_kdtree.apply(graph_, params(), level);
+
+//         da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE_REP_SUBSET);
+//         da_kdtree.apply(graph_, params(), level);
+//
+
+
 // 	NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::shootNormals(graph_, params().normalShooting);
         cerr << "Data association took " << (get_time() - timing) * 1000 << " ms" << endl;
- 
+
       /// get edge set
       timing = get_time();
       g2o::OptimizableGraph::EdgeSet eset = graph_.getEdgesetFast();
       cerr << "Edge set construction of size " << eset.size() << " took " << (get_time() - timing) * 1000 << " ms" << endl;
+
+      ///avoid optimizer segfault
+      if(eset.size() == 0)
+       continue;
 
       /// initializeOptimization
       timing = get_time();
@@ -113,7 +124,11 @@ namespace ssa{
       cerr << "initializeOptimization took " << (get_time() - timing) * 1000 << " ms" << endl;
 
       timing = get_time();
-      graph_._optimizer.optimize(params().g2oIterations);
+      if(level == 0){
+	graph_._optimizer.optimize(params().g2oIterations);
+      } else {
+	graph_._optimizer.optimize(1);
+      }
       cerr << "g2o took " << (get_time() - timing) * 1000 << " ms" << endl;
 
       /// moveUnoptimizedPoints
@@ -151,7 +166,7 @@ namespace ssa{
       double r = 0; //point->cr;
       double g = 0; //point->cg;
       double b = 0; //point->cb;
-      
+
       //find neighborhood
       for (g2o::OptimizableGraph::EdgeSet::iterator it=point->edges().begin(); it!=point->edges().end(); it++){
         EdgeType3* edge=dynamic_cast<EdgeType3*>(*it);
@@ -166,7 +181,7 @@ namespace ssa{
           }
         }
       }
-      
+
       ///Add weighted color values
       for(size_t j = 0; j < neighborhood.size(); ++j){
         PointVertex*& n = neighborhood[j];
@@ -184,7 +199,7 @@ namespace ssa{
         b += n->cb * weight;
         totalWeight += weight;
       }
-      
+
       //set colors
       if(neighborhood.size() > 1){
         point->cr = r / totalWeight;
@@ -199,7 +214,7 @@ namespace ssa{
       }
     }
   }
-  
+
 } //end namespace
 
 
