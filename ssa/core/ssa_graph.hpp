@@ -1,16 +1,16 @@
-// Sparse Surface Optimization 
+// Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -61,7 +61,7 @@ namespace ssa{
       return;
     }
     _optimizer.load(graphstream);
-    std::cerr << "loaded ssa graph with " << _optimizer.vertices().size() << " vertices and " << _optimizer.edges().size() << " edges." << std::endl; 
+    std::cerr << "loaded ssa graph with " << _optimizer.vertices().size() << " vertices and " << _optimizer.edges().size() << " edges." << std::endl;
     linkNodesToVertices();
     std::cerr << "filled access structs..." << std::endl;
   }
@@ -153,12 +153,12 @@ namespace ssa{
 //         verticesToSave.insert(static_cast<OptimizableGraph::Vertex*>(*it));
 //       }
 //     }
-// 
+//
 //     for (set<Vertex*, VertexIDCompare>::const_iterator it = verticesToSave.begin(); it != verticesToSave.end(); ++it){
 //       OptimizableGraph::Vertex* v = *it;
 //       _optimizer.saveVertex(graphstream, v);
 //     }
-// 
+//
 //     EdgeContainer edgesToSave;
 //     for (HyperGraph::EdgeSet::const_iterator it = _optimizer.edges().begin(); it != _optimizer.edges().end(); ++it) {
 //       const OptimizableGraph::Edge* e = dynamic_cast<const OptimizableGraph::Edge*>(*it);
@@ -166,7 +166,7 @@ namespace ssa{
 //         edgesToSave.push_back(const_cast<Edge*>(e));
 //     }
 //     sort(edgesToSave.begin(), edgesToSave.end(), EdgeIDCompare());
-// 
+//
 //     for (EdgeContainer::const_iterator it = edgesToSave.begin(); it != edgesToSave.end(); ++it) {
 //       OptimizableGraph::Edge* e = *it;
 //       _optimizer.saveEdge(graphstream, e);
@@ -189,7 +189,7 @@ namespace ssa{
 
     for (g2o::OptimizableGraph::VertexIDMap::const_iterator it=_optimizer.vertices().begin(); it!=_optimizer.vertices().end(); it++){
       PoseVertex* v=dynamic_cast<PoseVertex*>(it->second);
-      if(v){  
+      if(v){
           //Fix first pose vertex
           if(_verticies_poses.size() == 0)
             v->setFixed(true);
@@ -200,7 +200,7 @@ namespace ssa{
 
     for (g2o::OptimizableGraph::VertexIDMap::const_iterator it=_optimizer.vertices().begin(); it!=_optimizer.vertices().end(); it++){
       PointVertex* v=dynamic_cast<PointVertex*>(it->second);
-      if(v){  
+      if(v){
         maxVertexId = max(maxVertexId, v->id());
         v->setParentVertex(dynamic_cast<PoseVertex*> (_optimizer.vertices()[v->parentVertexId()]));
         if(v->parentVertex()){
@@ -307,7 +307,7 @@ namespace ssa{
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
   void SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::calcMeanCov(SparseSurfaceAdjustmentParams& params){
     std::vector<int> keys = getPoseIds();
-    #pragma omp parallel for shared(params, keys) 
+    #pragma omp parallel for shared(params, keys)
     for(int i = 0; i < (int) keys.size(); ++i)
       calcMeanCov(params, keys[i]);
   }
@@ -376,7 +376,7 @@ namespace ssa{
             _edges_points_to_move_transforms.push_back(backupTransform);
           }
         }
-      } 
+      }
     }
     return eset;
   }
@@ -396,7 +396,7 @@ namespace ssa{
       eset.insert(e3);
     }
 
-//     #pragma omp parallel for schedule(dynamic, 2) shared(eset) 
+//     #pragma omp parallel for schedule(dynamic, 2) shared(eset)
     for (size_t i = 0; i < _edges_observations.size(); ++i){
       SensorEdgeType*& e2=_edges_observations[i];
       PoseVertex* v=static_cast<PoseVertex*>(e2->vertices()[0]);
@@ -442,7 +442,7 @@ namespace ssa{
 //             pointWithCorrespondence[v1->id()] = true;
 //             pointWithCorrespondence[v2->id()] = true;
 //             eset.insert(e3);
-//           } 
+//           }
 //         }
 //     }
 //     for (g2o::OptimizableGraph::EdgeSet::iterator it=_optimizer.edges().begin(); it!=_optimizer.edges().end(); it++){
@@ -452,14 +452,14 @@ namespace ssa{
 //         if(pointWithCorrespondence[v1->id()]){
 //           eset.insert(e2);
 //         }
-//       } 
+//       }
 //     }
 //     return eset;
 //   }
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
   void SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::moveUnoptimizedPoints(){
-    #pragma omp parallel for schedule(dynamic, 20) 
+    #pragma omp parallel for schedule(dynamic, 20)
     for(size_t i = 0; i < _edges_points_to_move.size(); ++i){
       SensorEdgeType*& e=_edges_points_to_move[i];
       PoseVertex*    v1=static_cast<PoseVertex*>(e->vertices()[0]);
@@ -490,7 +490,7 @@ namespace ssa{
   }
 
 //   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-//   typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointTree 
+//   typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointTree
 //   SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::getKDTreeOfScans
 //   (int& scanId)
 //   {
@@ -498,7 +498,7 @@ namespace ssa{
 //     std::map<int, int> keys = getScanIds();
 //     for(std::map<int, int>::iterator it = keys.begin(); it != keys.end(); ++it){
 //       if(it->second != scanId){
-// 
+//
 //         Observation<PointVertex>& o = _verticies_observations[it->second];
 //         for(unsigned int j = 0; j < o.size(); ++j){
 //           PointVertex* point = o[j];
@@ -532,7 +532,7 @@ namespace ssa{
   }
 
 //   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-//   typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointTree 
+//   typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointTree
 //   SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::getKDTreeOfScan
 //   (int& scanId)
 //   {
@@ -567,7 +567,7 @@ namespace ssa{
   {
     return _verticies_observations[scanId];
   }
-  
+
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
   int SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::addVertex(PoseVertex*& v)
   {
@@ -595,7 +595,7 @@ namespace ssa{
     _verticies_points.push_back(v);
     _verticies_observations[v->parentVertex()->id()].push_back(v);
 
-    /** force recomputation of index 
+    /** force recomputation of index
         TODO: this could be implemented in a more elegant way! */
     _hierarchical_point_vertex_index.clear();
     return v->id();
@@ -863,7 +863,7 @@ namespace ssa{
     for (g2o::OptimizableGraph::VertexIDMap::iterator it=_optimizer.vertices().begin(); it!=_optimizer.vertices().end(); it++){
       PoseVertex* p = dynamic_cast<PoseVertex* >(it->second);
       if(p){
-        if(!fixedOneVertex){ //the first pose vertex has to be fixed 
+        if(!fixedOneVertex){ //the first pose vertex has to be fixed
           p->setFixed(true);
           fixedOneVertex = true;
         } else {
@@ -874,7 +874,7 @@ namespace ssa{
         if(vp){
           vp->setFixed(fixed);
         }
-      } 
+      }
     }
   }
 
@@ -912,7 +912,7 @@ namespace ssa{
             continue;
         double distance = (v1->estimate() - v2->estimate()).norm();
         if(distance <= minDistance && !haveCommonSensorVertex(v1, v2)){
-          da_edges[distance + 1e-10*v1->id()] = e;  
+          da_edges[distance + 1e-10*v1->id()] = e;
           count++;
           _fixedDataAssociation[v1->parentVertex()->id()][v2->parentVertex()->id()] = true;
           _fixedDataAssociation[v2->parentVertex()->id()][v1->parentVertex()->id()] = true;
@@ -1002,7 +1002,7 @@ namespace ssa{
         edge->vertices()[1]=v;
         addEdge(edge);
         slamEdges.insert(edge);
-      } 
+      }
     }
     int error = labeler.labelEdges(slamEdges);
     if(error == -1)
@@ -1080,11 +1080,11 @@ namespace ssa{
             if(e2){
               PointVertex* vp2 = dynamic_cast<PointVertex* >(e2->vertices()[0]);
               PointVertex* vp3 = dynamic_cast<PointVertex* >(e2->vertices()[1]);
-              //check direction 
+              //check direction
               if(vp2 && vp3)
                 if(vp2->id() == vp->id())
                   vp2 = vp3;
-            
+
               if(vp2){
                 for (g2o::OptimizableGraph::EdgeSet::iterator ittt=vp2->edges().begin(); ittt!=vp2->edges().end(); ittt++){
                   SensorEdgeType* e3=dynamic_cast<SensorEdgeType*>(*ittt);
@@ -1218,19 +1218,19 @@ namespace ssa{
   }
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  Observation<typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointVertex>& 
+  Observation<typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointVertex>&
   SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::observation(int i)
   {
     return _verticies_observations[i];
   }
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  std::vector<typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointVertex* >&  
+  std::vector<typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointVertex* >&
   SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::getPointVertices(int poseId, int level = 0)
   {
 
     if(_hierarchical_point_vertex_index.size() == 0){
-      #pragma omp single
+      #pragma omp critical
       for(size_t i = 0; i < _edges_observations.size(); ++i)
       {
         SensorEdgeType*& edge = _edges_observations[i];
@@ -1243,7 +1243,7 @@ namespace ssa{
     }
     return _hierarchical_point_vertex_index[poseId][level];
   }
-    
+
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
   void
@@ -1262,7 +1262,7 @@ namespace ssa{
 //         }
 //         DataAssociationEdgeType* e3=dynamic_cast<DataAssociationEdgeType*>(*it);
 //         if(e3){
-//           
+//
 //         }
 //       }
 //     }
