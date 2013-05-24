@@ -5,7 +5,7 @@ QT4_WRAP_CPP(MOC_SOURCES ssa_sparse_optimizer.h)
 # set(sparse_optimizer_SRCS
 #     ssa_sparse_optimizer.cpp
 # )
-# 
+#
 # qt4_automoc(${sparse_optimizer_SRCS})
 
 

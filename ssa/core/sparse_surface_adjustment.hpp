@@ -96,24 +96,25 @@ namespace ssa{
       timing = get_time();
         graph_.dropDataAssociation();
       /// use new abstract data association
+      if(params().nearestNeighbor.maxSearchDistance > 0.0){
         DataAssociationT<EdgeType1, EdgeType2, EdgeType3> da_kdtree;
 
 	da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE);
         da_kdtree.apply(graph_, params(), level);
+      }
 
 //         da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE_REP_SUBSET);
 //         da_kdtree.apply(graph_, params(), level);
-//
 
+	if(params().normalShooting.maxSearchDistance > 0.0)
+	  NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::shootNormals(graph_, params().normalShooting);
 
-// 	NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::shootNormals(graph_, params().normalShooting);
         cerr << "Data association took " << (get_time() - timing) * 1000 << " ms" << endl;
 
       /// get edge set
       timing = get_time();
       g2o::OptimizableGraph::EdgeSet eset = graph_.getEdgesetFast();
       cerr << "Edge set construction of size " << eset.size() << " took " << (get_time() - timing) * 1000 << " ms" << endl;
-
       ///avoid optimizer segfault
       if(eset.size() == 0)
        continue;

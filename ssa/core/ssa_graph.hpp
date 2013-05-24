@@ -385,6 +385,7 @@ namespace ssa{
   g2o::OptimizableGraph::EdgeSet SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::getEdgesetFast()
   {
     g2o::OptimizableGraph::EdgeSet eset;
+    if(false)
     for (size_t i = 0; i < _edges_odometry.size(); ++i){
       eset.insert(_edges_odometry[i]);
     }
