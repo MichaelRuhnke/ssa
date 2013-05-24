@@ -475,6 +475,7 @@ GLint SSA2DglWidget::Gen3DObjectList_obsVertices()
 
 GLint SSA2DglWidget::Gen3DObjectList_normals()
 {
+  return 0;
   double normalLength = 0.05;
 
   GLint lid=glGenLists(1);
