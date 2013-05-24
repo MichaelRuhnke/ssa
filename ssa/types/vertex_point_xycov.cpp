@@ -1,16 +1,16 @@
-// Sparse Surface Optimization 2D
+// Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
-// SSA2D is free software: you can redistribute it and/or modify
+//
+// SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
-// SSA2D is distributed in the hope that it will be useful,
+//
+// SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -58,16 +58,17 @@ namespace ssa {
   void VertexPointXYCov::updateNormal(Eigen::Matrix2d& cov){
     Matrix2d eigvectors;
     Vector2d eigvalues;
+//     _cov = cov;
     Eigen::EigenSolver<Matrix2d> solv(cov);
     eigvectors = solv.eigenvectors().real();
     eigvalues = solv.eigenvalues().real();
-    
+
     if(eigvalues(1) <= eigvalues(0)){
       _normal = Vector2d(eigvectors(0,1), eigvectors(1,1));
     } else {
       _normal = Vector2d(eigvectors(0,0), eigvectors(1,0));
     }
-    
+
     ///check direction of normal
     Vector2d laserPoint(_estimate[0], _estimate[1]);
     Vector2d robotPose(parentVertex()->estimate()[0], parentVertex()->estimate()[1]);
@@ -75,8 +76,10 @@ namespace ssa {
     if((laserPoint - robotPose).normalized().dot(_normal) > 0){
       _normal = -_normal;
     }
+    Eigen::Rotation2Dd rot(-parentVertex()->estimate()[2]);
+    _normal = rot * _normal; //rotate in local coordinate frame
   }
-      
+
   Vector2d& VertexPointXYCov::normal(){
     Matrix2d eigvectors;
     Vector2d eigvalues;
@@ -100,7 +103,7 @@ namespace ssa {
       if((laserPoint - robotPose).normalized().dot(_normal) > 0){
         _normal = -_normal;
       }
-      Eigen::Rotation2Dd rot(parentVertex()->estimate()[2]);
+      Eigen::Rotation2Dd rot(-parentVertex()->estimate()[2]);
       _normal = rot * _normal;
       _hasNormal = true;
     }

@@ -1,16 +1,16 @@
-// Sparse Surface Optimization 
+// Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,11 +26,20 @@ namespace ssa {
 
   void EdgePointXYCovPointXYCov::computeError()
   {
-    const VertexPointXYCov* l1 = static_cast<const VertexPointXYCov*>(_vertices[0]);
-    const VertexPointXYCov* l2 = static_cast<const VertexPointXYCov*>(_vertices[1]);
+    VertexPointXYCov* l1 = static_cast<VertexPointXYCov*>(_vertices[0]);
+    VertexPointXYCov* l2 = static_cast<VertexPointXYCov*>(_vertices[1]);
     _error = l1->estimate() - l2->estimate();
 
-    information() = l1->covariance().inverse() + l2->covariance().inverse();
+    Vector2d x(1.0, 0.0);
+    Vector2d normal = l1->globalNormal() + l2->globalNormal();
+    normal.normalize();
+    double angle = acos(normal.dot(x));
+    information().setIdentity();
+    information()(0,0) = 100;
+    information()(1,1) = 0.1;
+    Eigen::Rotation2Dd rot(-angle);
+    information() = rot.matrix() * information() * rot.matrix().transpose();
+    //information() = l1->covariance().inverse() + l2->covariance().inverse();
     if(chi2() < 0.0){
       std::cerr << PVAR(chi2()) << " " <<  l1->covariance().inverse() << " " <<  l2->covariance().inverse() << " " << std::endl;
     }
@@ -75,7 +84,7 @@ namespace ssa {
 //     //vi->estimate().rotation().angle();
 //     const double& x2           = vj->estimate()[0];
 //     const double& y2           = vj->estimate()[1];
-// 
+//
 //     double aux_1 = cos(th1) ;
 //     double aux_2 = -aux_1 ;
 //     double aux_3 = sin(th1) ;

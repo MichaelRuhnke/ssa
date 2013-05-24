@@ -33,20 +33,20 @@ namespace ssa {
 SSA2DglWidget::SSA2DglWidget(){
   setInitialParams();
   _ssa_graph = 0;
-  _poseVertices = Gen3DObjectList_poseVertices();
-  _obsVertices = Gen3DObjectList_obsVertices();
-  _normals = Gen3DObjectList_normals();
-  _mesh = Gen3DObjectList_mesh();
+  _poseVertices = 0;
+  _obsVertices = 0;
+  _normals = 0;
+  _mesh = 0;
 }
 
 SSA2DglWidget::SSA2DglWidget(QWidget*& widget){
   (void) widget; ///remove warning
   setInitialParams();
   _ssa_graph = 0;
-  _poseVertices = Gen3DObjectList_poseVertices();
-  _obsVertices = Gen3DObjectList_obsVertices();
-  _normals = Gen3DObjectList_normals();
-  _mesh = Gen3DObjectList_mesh();
+  _poseVertices = 0;
+  _obsVertices = 0;
+  _normals = 0;
+  _mesh = 0;
 
   // replace camera
   qglviewer::Camera* oldcam = camera();
@@ -62,8 +62,10 @@ SSA2DglWidget::SSA2DglWidget(QWidget*& widget){
 }
 
 SSA2DglWidget::~SSA2DglWidget(){
-  glDeleteLists(_poseVertices, 1);
-  glDeleteLists(_obsVertices, 1);
+  if(_poseVertices > 0)
+    glDeleteLists(_poseVertices, 1);
+  if(_obsVertices > 0)
+    glDeleteLists(_obsVertices, 1);
 }
 
 void SSA2DglWidget::init(){
@@ -73,7 +75,7 @@ void SSA2DglWidget::init(){
   //  glDisable(GL_LIGHTING);
 
   glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_BLEND); 
+  glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glShadeModel(GL_SMOOTH);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -81,6 +83,7 @@ void SSA2DglWidget::init(){
   // mouse bindings
   setMouseBinding(Qt::RightButton, CAMERA, ZOOM);
   setMouseBinding(Qt::MidButton, CAMERA, TRANSLATE);
+  setMouseBinding(Qt::LeftButton, CAMERA, TRANSLATE);
 
 //   // keyboard shortcuts
 //   setShortcut(CAMERA_MODE, 0);
@@ -90,10 +93,10 @@ void SSA2DglWidget::init(){
   // description for shortcuts
 //   setKeyDescription(Qt::CTRL + Qt::Key_S, "capture a screenshot (stored in current directory)");
 //   setKeyDescription(Qt::CTRL + Qt::Key_M, "Toggle visibility of the main menu");
-//   setKeyDescription(Qt::CTRL + Qt::Key_W, "Toggles wire frame display"); 
+//   setKeyDescription(Qt::CTRL + Qt::Key_W, "Toggles wire frame display");
 
 //   emit initOpenGl();
-// 
+//
 //   _initCalled = true;
 }
 
@@ -162,11 +165,11 @@ void SSA2DglWidget::drawEdges(){
     glBegin(GL_LINES);
       glVertex3f(fromPose(0), fromPose(1), 0.0f);
       glVertex3f(toPose(0), toPose(1), 0.0f);
-    glEnd();  
+    glEnd();
   }
 
   glColor3f(1.0, 0.0, 0.0);
-  if(_drawCorrespondences)
+  if(_drawCorrespondences && false) ///TODO: Make thread safe
   for(unsigned int i = 0; i < _ssa_graph->_edges_data_association.size(); ++i){
      EdgePointXYCovPointXYCov*& edge = _ssa_graph->_edges_data_association[i];
      VertexPointXYCov* from = dynamic_cast<VertexPointXYCov* >(edge->vertices()[0]);
@@ -174,7 +177,7 @@ void SSA2DglWidget::drawEdges(){
      glBegin(GL_LINES);
      glVertex3f(from->estimate()[0], from->estimate()[1], 0.0f);
      glVertex3f(to->estimate()[0], to->estimate()[1], 0.0f);
-     glEnd();  
+     glEnd();
   }
 
 //   if(false)
@@ -187,13 +190,13 @@ void SSA2DglWidget::drawEdges(){
 //       Eigen::Vector3f t = from->estimate().translation().cast<float>();
 //       Eigen::Quaternionf q = from->estimate().rotation().cast<float>();
 //       Eigen::Affine3f transformation = (Eigen::Affine3f)Eigen::Translation3f(t) * q;
-// 
+//
 //       glPushMatrix();
 //       glMultMatrixf(transformation.data());
 //       glBegin(GL_LINES);
 //         glVertex3f(0.0, 0.0, 0.0);
 //         glVertex3f(e->measurement()[0], e->measurement()[1], e->measurement()[2] );
-//       glEnd();  
+//       glEnd();
 //       glPopMatrix();
 //     }
 //   }
@@ -206,12 +209,12 @@ void SSA2DglWidget::drawMeshEdges(){
      EdgePointXYCovPointXYCov*& edge = _ssa_graph->_edges_surface_mesh[i];
      VertexPointXYCov* from = dynamic_cast<VertexPointXYCov* >(edge->vertices()[0]);
      VertexPointXYCov* to = dynamic_cast<VertexPointXYCov* >(edge->vertices()[1]);
-     if(from->parentVertex()->id() != selectedName() && to->parentVertex()->id() != selectedName()) 
+     if(from->parentVertex()->id() != selectedName() && to->parentVertex()->id() != selectedName())
         continue;
      glBegin(GL_LINES);
       glVertex3f(from->estimate()[0], from->estimate()[1], from->estimate()[2]);
       glVertex3f(to->estimate()[0], to->estimate()[1], to->estimate()[2]);
-     glEnd();  
+     glEnd();
 
   }
 }
@@ -221,7 +224,7 @@ void SSA2DglWidget::drawCovariance(){
 //   for(unsigned int i = 0; i < _ssa_graph->_meshEdges.size(); ++i){
 //      EdgePointXYCovPointXYCov*& edge = _ssa_graph->_meshEdges[i];
 //      VertexPointXYCov* from = dynamic_cast<VertexPointXYCov* >(edge->vertices()[0]);
-//      if(from->parentVertex()->id() != selectedName()) 
+//      if(from->parentVertex()->id() != selectedName())
 //         continue;
 //     glPushMatrix();
 //       glColor3f(0.0, 1.0, 0.0);
@@ -399,7 +402,7 @@ void SSA2DglWidget::openFile(){
     }
     _ssa_graph->_optimizer.load(graph);
     _ssa_graph->linkNodesToVertices();
-    cerr << "loaded baGraph with " << _ssa_graph->_optimizer.vertices().size() << " vertices and " << _ssa_graph->_optimizer.edges().size() << " edges." << std::endl; 
+    cerr << "loaded baGraph with " << _ssa_graph->_optimizer.vertices().size() << " vertices and " << _ssa_graph->_optimizer.edges().size() << " edges." << std::endl;
 
 }
 
@@ -436,9 +439,9 @@ GLint SSA2DglWidget::Gen3DObjectList_poseVertices()
 
 void SSA2DglWidget::drawVertices(){
    // Draw vertices
-  glPointSize(_pointSize * 100);    
+  glPointSize(_pointSize * 100);
   std::vector<int>  indices = _ssa_graph->getPoseIds();
-  for (size_t i = 0; i < indices.size(); ++i){  
+  for (size_t i = 0; i < indices.size(); ++i){
     std::vector<ssa::VertexPointXYCov* > vertices = _ssa_graph->getPointVertices(indices[i], _level);
     for (std::vector<ssa::VertexPointXYCov*>::const_iterator it=vertices.begin(); it!=vertices.end(); it++){
       ssa::VertexPointXYCov* v=(*it);
@@ -472,7 +475,7 @@ GLint SSA2DglWidget::Gen3DObjectList_obsVertices()
 
 GLint SSA2DglWidget::Gen3DObjectList_normals()
 {
-  double normalLength = 0.02;
+  double normalLength = 0.05;
 
   GLint lid=glGenLists(1);
   glNewList(lid, GL_COMPILE);
@@ -482,10 +485,10 @@ GLint SSA2DglWidget::Gen3DObjectList_normals()
   for (g2o::OptimizableGraph::VertexIDMap::const_iterator it=_ssa_graph->_optimizer.vertices().begin(); it!=_ssa_graph->_optimizer.vertices().end(); it++){
     VertexPointXYCov* v=dynamic_cast<VertexPointXYCov*>(it->second);
     if(v){
-      if(v->parentVertex()->id() != selectedName()) 
+      if(v->parentVertex()->id() != selectedName())
        continue;
       Vector2d normal = v->globalNormal() * normalLength;
-      glColor3f(0.0, 0.0, 0.0);
+      glColor3f(0.0, 0.8, 0.0);
       glPushMatrix();
         glTranslatef(v->estimate()(0),v->estimate()(1), 0.0f);
         glBegin(GL_LINES);
@@ -499,7 +502,7 @@ GLint SSA2DglWidget::Gen3DObjectList_normals()
 //   for(unsigned int i = 0; i < _ssa_graph->_meshEdges.size(); ++i){
 //      EdgePointXYCovPointXYCov*& edge = _ssa_graph->_meshEdges[i];
 //      VertexPointXYCov* from = dynamic_cast<VertexPointXYCov* >(edge->vertices()[0]);
-//      if(from->parentVertex()->id() != selectedName()) 
+//      if(from->parentVertex()->id() != selectedName())
 //         continue;
 // //     //draw covariance ellipsoid
 // //     glPushMatrix();
@@ -510,7 +513,7 @@ GLint SSA2DglWidget::Gen3DObjectList_normals()
 // //       glMultMatrixd(transf.data());
 // //       drawEllipsoid(lambda(0), lambda(1), lambda(2));
 // //     glPopMatrix();
-// 
+//
 //   }
 
   glEndList();
@@ -529,12 +532,12 @@ GLint SSA2DglWidget::Gen3DObjectList_mesh()
      EdgePointXYCovPointXYCov*& edge = _ssa_graph->_edges_surface_mesh[i];
      VertexPointXYCov* from = dynamic_cast<VertexPointXYCov* >(edge->vertices()[0]);
      VertexPointXYCov* to = dynamic_cast<VertexPointXYCov* >(edge->vertices()[1]);
-//      if(from->parentVertex()->id() != selectedName() && to->parentVertex()->id() != selectedName()) 
+//      if(from->parentVertex()->id() != selectedName() && to->parentVertex()->id() != selectedName())
 //         continue;
      glBegin(GL_LINES);
       glVertex3f(from->estimate()[0], from->estimate()[1], 0.0f);
       glVertex3f(to->estimate()[0], to->estimate()[1], 0.0f);
-     glEnd();  
+     glEnd();
   }
 
   glEndList();
@@ -544,15 +547,19 @@ GLint SSA2DglWidget::Gen3DObjectList_mesh()
 
 void SSA2DglWidget::Gen3DObjectList_update()
 {
-  glDeleteLists(_poseVertices, 1);
-  glDeleteLists(_obsVertices, 1);
-  glDeleteLists(_normals, 1);
-  glDeleteLists(_mesh, 1);
+  if(_poseVertices != 0)
+    glDeleteLists(_poseVertices, 1);
+  if(_obsVertices != 0)
+    glDeleteLists(_obsVertices, 1);
+   if(_normals != 0)
+     glDeleteLists(_normals, 1);
+//   if(_mesh != 0)
+//     glDeleteLists(_mesh, 1);
 
   _poseVertices = Gen3DObjectList_poseVertices();
   _obsVertices = Gen3DObjectList_obsVertices();
   _normals = Gen3DObjectList_normals();
-  _mesh = Gen3DObjectList_mesh();
+//   _mesh = Gen3DObjectList_mesh();
 }
 
 void SSA2DglWidget::Gen3DObjectList_updateSelection()
@@ -589,7 +596,7 @@ void SSA2DglWidget::saveSnapshotVideo(){
   QDateTime current;
   char fileName[2048];
   sprintf(fileName, "snapshot-%03d.png", snapshotCounter());
-  
+
   QString snapshotFileName = fileName;
   setSnapshotFileName (snapshotFileName);
   setSnapshotFormat ("PNG");

@@ -1,16 +1,16 @@
-// Sparse Surface Optimization 
+// Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -68,11 +68,11 @@ namespace ssa {
         VertexSE2* v1=dynamic_cast<VertexSE2*>(ssaGraph._optimizer.vertex(id1));
         VertexSE2* v2=dynamic_cast<VertexSE2*>(ssaGraph._optimizer.vertex(id2));
         if (! v1 ) {
-          cerr << "vertex " << id1 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl; 
+          cerr << "vertex " << id1 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl;
           continue;
         }
         if (! v2 ) {
-          cerr << "vertex " << id2 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl; 
+          cerr << "vertex " << id2 << " is not existing, cannot add edge (" << id1 << "," << id2 << ")" << endl;
           continue;
         }
         EdgeSE2* edge = new EdgeSE2;
@@ -82,7 +82,7 @@ namespace ssa {
         edge->vertices()[1]=v2;
         edge->computeError();
         ssaGraph.addEdge(edge);
-      } 
+      }
         else if(tag=="ROBOTLASER1" && previousVertex)
       {
         importRobotLaser(ls, previousVertex, ssaGraph);
@@ -90,7 +90,7 @@ namespace ssa {
     }
   }
 
-  void SSAPoseGraph2D::importRobotLaser(std::istream& is, VertexSE2* parent, SparseSurfaceAdjustmentGraph2D& ssaGraph)  
+  void SSAPoseGraph2D::importRobotLaser(std::istream& is, VertexSE2* parent, SparseSurfaceAdjustmentGraph2D& ssaGraph)
   {
     int type;
     double angle, fov, res, maxrange, acc;
@@ -124,6 +124,11 @@ namespace ssa {
     is >> hostname;
     is >> loggerTimestamp;
 
+    LaserSensorParams params;
+    params.maxRange = maxrange;
+    params.angularResolution = res;
+    params.sensorPrecision = 0.03;
+
     SE2 robotPose = SE2(x,y,theta);
     SE2 laserPose = SE2(sensorX,sensorY,sensorTheta);
     SE2 laserOffSet = robotPose.inverse()*laserPose;
@@ -152,10 +157,7 @@ namespace ssa {
       edge->vertices()[0]=parent;
       edge->vertices()[1]=vertex;
       edge->setMeasurement(parent->estimate().inverse() * vertex->estimate());
-
-      Matrix2d covariance = Matrix2d::Identity();
-      edge->information() = covariance.inverse();
-      edge->computeError();
+      edge->information().setIdentity();
       ssaGraph.addEdge(edge);
 
       beamAngle += res;
