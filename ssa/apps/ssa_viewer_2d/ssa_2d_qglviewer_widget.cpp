@@ -180,26 +180,23 @@ void SSA2DglWidget::drawEdges(){
      glEnd();
   }
 
-//   if(false)
-//   for (g2o::OptimizableGraph::EdgeSet::iterator it=_ssa_graph->_optimizer.edges().begin(); it!=_ssa_graph->_optimizer.edges().end(); it++){
-//     EdgeSE3PointXYZCov* e =dynamic_cast<EdgeSE3PointXYZCov*>(*it);
-//     if(e){
-//       g2o::VertexSE2* from = dynamic_cast<g2o::VertexSE2*>(e->vertices()[0]);
-//       if(from->id() != selectedName())
-//         continue;
-//       Eigen::Vector3f t = from->estimate().translation().cast<float>();
-//       Eigen::Quaternionf q = from->estimate().rotation().cast<float>();
-//       Eigen::Affine3f transformation = (Eigen::Affine3f)Eigen::Translation3f(t) * q;
-//
-//       glPushMatrix();
-//       glMultMatrixf(transformation.data());
-//       glBegin(GL_LINES);
-//         glVertex3f(0.0, 0.0, 0.0);
-//         glVertex3f(e->measurement()[0], e->measurement()[1], e->measurement()[2] );
-//       glEnd();
-//       glPopMatrix();
-//     }
-//   }
+  ///draw observation covariances
+  if(false)
+  for (g2o::OptimizableGraph::EdgeSet::iterator it=_ssa_graph->_optimizer.edges().begin(); it!=_ssa_graph->_optimizer.edges().end(); it++){
+    EdgeSE2PointXYCov* e =dynamic_cast<EdgeSE2PointXYCov*>(*it);
+    if(e){
+      g2o::VertexSE2* from = dynamic_cast<g2o::VertexSE2*>(e->vertices()[0]);
+      ssa::VertexPointXYCov* to = dynamic_cast<ssa::VertexPointXYCov*>(e->vertices()[1]);
+      if(from->id() != selectedName() || from == 0 || to == 0)
+        continue;
+      glPushMatrix();
+	glTranslatef(to->estimate()(0),to->estimate()(1), 0.0f);
+	Eigen::Matrix2d cov = e->information().inverse();
+	drawCovariance(cov, from->estimate().rotation().angle());
+      glPopMatrix();
+
+    }
+  }
 }
 
 
@@ -425,9 +422,9 @@ GLint SSA2DglWidget::Gen3DObjectList_poseVertices()
       if(v){
         if(_drawVertices){
           glPushMatrix();
-            //glMultMatrixd(v->estimate().data());
             glTranslatef(v->estimate().translation()(0),v->estimate().translation()(1), 0.0f);
-            glScalef(0.05f, 0.05f, 0.05f);
+	    glRotatef(rad2deg(v->estimate().rotation().angle()), 0.0f, 0.0f, 1.0);
+            glScalef(0.1f, 0.1f, 0.f);
             drawPoseBox();
           glPopMatrix();
         }
@@ -475,7 +472,6 @@ GLint SSA2DglWidget::Gen3DObjectList_obsVertices()
 
 GLint SSA2DglWidget::Gen3DObjectList_normals()
 {
-  return 0;
   double normalLength = 0.05;
 
   GLint lid=glGenLists(1);
@@ -496,6 +492,10 @@ GLint SSA2DglWidget::Gen3DObjectList_normals()
           glVertex3f(0.0, 0.0, 0.0);
           glVertex3f(normal(0),normal(1), 0.0f);
         glEnd();
+	if(v->covariance() != Eigen::Matrix2d::Identity()){
+	  glColor3f(0.0, 0.0, 1.0);
+	  drawCovariance(v->covariance(), 0.0);
+	}
       glPopMatrix();
     }
   }
@@ -520,6 +520,35 @@ GLint SSA2DglWidget::Gen3DObjectList_normals()
   glEndList();
   return lid;
 };
+
+void SSA2DglWidget::drawEllipse(double l1, double l2){
+  float x,y;
+  glBegin(GL_LINE_LOOP);
+    for(double i = -M_PI; i <= M_PI; i +=.1){
+      x = l1*sin(i);
+      y = l2*cos(i);
+      glVertex3f(x,y,_height);
+    }
+  glEnd();
+}
+
+void SSA2DglWidget::drawCovariance(Matrix2d& cov, double angle = 0.0){
+  const double& a = cov(0,0);
+  const double& b = cov(0,1);
+  const double& d = cov(1,1);
+  /* get eigen-values */
+  double D = a*d - b*b; // determinant of the matrix
+  double T = a+d;       // Trace of the matrix
+  double h = sqrt(0.25*(T*T) - D);
+  double lambda1 = 0.5*T + h;  // solving characteristic polynom using p-q-formula
+  double lambda2 = 0.5*T - h;
+  double theta     = 0.5 * atan2(2.0 * b, a - d);
+  lambda1 = 3.0 * sqrt(lambda1); //3.0
+  lambda2 = 3.0 * sqrt(lambda2);
+
+  glRotatef(rad2deg(theta + angle), 0.0, 0.0, 1.0);
+  drawEllipse(lambda1, lambda2);
+}
 
 GLint SSA2DglWidget::Gen3DObjectList_mesh()
 {

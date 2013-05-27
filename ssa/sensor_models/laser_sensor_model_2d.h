@@ -48,10 +48,6 @@ namespace ssa{
     // Laser sensor model
     //--------------------------
     static void applySensorModel(SparseSurfaceAdjustmentGraph2D& ssaGraph, LaserSensorParams& params);
-
-    //! returns the measurement (edge) covariance based on the incidence angle
-    static Eigen::Matrix2d getCovarianceForPoint(VertexPointXYCov*& point, double& beamAngle, LaserSensorParams& params);
-    static Eigen::Matrix2d getCovarianceForPoint(Eigen::Vector2d& beam, double& beamAngle, double& angle, LaserSensorParams& params);
     static void setInformationForVertexPoint(EdgeSE2PointXYCov*& edge, VertexPointXYCov*& point, LaserSensorParams& params);
 
   };

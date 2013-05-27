@@ -32,11 +32,13 @@ namespace ssa {
 
     Vector2d x(1.0, 0.0);
     Vector2d normal = l1->globalNormal() + l2->globalNormal();
+    double diff = rad2deg(acos(l1->globalNormal().normalized().dot(l2->globalNormal().normalized())));
+    diff = 1.0 - (std::min(diff, 20.0 )/ 20.0);
     normal.normalize();
     double angle = acos(normal.dot(x));
     information().setIdentity();
-    information()(0,0) = 100;
-    information()(1,1) = 0.1;
+    information()(0,0) = diff * 1000; /// corresponds to uncertainty of 1mm
+    information()(1,1) = diff * 1;
     Eigen::Rotation2Dd rot(-angle);
     information() = rot.matrix() * information() * rot.matrix().transpose();
     //information() = l1->covariance().inverse() + l2->covariance().inverse();

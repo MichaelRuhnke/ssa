@@ -94,6 +94,10 @@ class SSA2DglWidget: public QGLViewer
       void Gen3DObjectList_update();
       void Gen3DObjectList_updateSelection();
 
+      void drawEllipse(double l1, double l2);
+      void drawCovariance(Matrix2d& cov, double angle);
+
+
   public:
   QWidget*               _parent;
   SparseSurfaceAdjustmentGraph2D*  _ssa_graph;
