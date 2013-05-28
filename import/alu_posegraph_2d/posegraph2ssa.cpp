@@ -109,7 +109,7 @@ int main(int argc, char **argv)
   params.maxRange = 80.0;
   params.angularResolution = 0.5;
   params.sensorPrecision = 0.01;
-  params.scale = 1e-2;
+  params.scale = 1e-3;
   LaserSensorModel2D::applySensorModel(ssaGraph, params);
   ssaGraph.save(outputFile);
 }
