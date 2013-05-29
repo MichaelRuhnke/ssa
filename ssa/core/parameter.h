@@ -1,16 +1,16 @@
 // Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -85,13 +85,13 @@ namespace ssa {
   struct NormalShootingParams : public CorrespondenceRejectionParams{
     double maxSearchDistance; /** in meter */
     double stepSize; /** size of single ns step */
-    int    steps; 
+    int    steps;
     int    increment;
     bool   onlyIncremental; /** search for NN only for incremental scans */
 
     inline NormalShootingParams(){
       maxSearchDistance = 0.005;
-      stepSize = 0.001; 
+      stepSize = 0.001;
       steps = 5;
       increment = 1;
       onlyIncremental = false;
@@ -148,6 +148,34 @@ namespace ssa {
       targetResolution = 0.002;
     }
 
+    inline void set2DDefaultParams(){
+      g2oIterations = 5;
+      ssaIterations = 5;
+      normalExtractionMaxNeighborDistance = 0.5;
+      normalExtractionMaxNeighbors = 8;
+      normalExtractionMinNeighbors = 3;
+      sensor = LMS;
+      outlierRejectionMinConnectedNeighbors = 0;
+      optimizeColors = false;
+      maxThreads = 4;
+      targetResolution = 0.01;
+      normalShooting.maxSearchDistance = 0.0;
+      normalShooting.stepSize = 0.01;
+      normalShooting.steps = 10;
+      normalShooting.increment = 1;
+      normalShooting.onlyIncremental = 0;
+      normalShooting.maxAngleDifference = 60;
+      normalShooting.maxColorChannelDiff = 1.0;
+      nearestNeighbor.maxSearchDistance = 0.1;
+      nearestNeighbor.numOfNeighbors = 1;
+      nearestNeighbor.increment = 1;
+      nearestNeighbor.onlyIncremental = 0;
+      nearestNeighbor.maxAngleDifference = 20;
+      nearestNeighbor.maxColorChannelDiff = 1.0;
+      nearestNeighbor.maxCorrespondencesPerPoint = 4;
+    }
+
+
     inline void printParams(){
       std::cerr << PVAR(version) << std::endl;
       std::cerr << PVAR(g2oIterations) << std::endl;
@@ -159,7 +187,7 @@ namespace ssa {
       std::cerr << PVAR(outlierRejectionMinConnectedNeighbors) << std::endl;
       std::cerr << PVAR(optimizeColors) << std::endl;
       std::cerr << PVAR(maxThreads) << std::endl;
-      std::cerr << PVAR(targetResolution) << std::endl;      
+      std::cerr << PVAR(targetResolution) << std::endl;
 
       normalShooting.printParams();
       nearestNeighbor.printParams();
@@ -244,7 +272,7 @@ namespace ssa {
       out << "outlierRejectionMinConnectedNeighbors " << outlierRejectionMinConnectedNeighbors << std::endl;
       out << "optimizeColors " << optimizeColors << std::endl;
       out << "maxThreads " << maxThreads << std::endl;
-      out << "targetResolution " << targetResolution << std::endl;            
+      out << "targetResolution " << targetResolution << std::endl;
 
       /** NormalShootingParams */
       out << "normalShooting.maxSearchDistance " << normalShooting.maxSearchDistance << std::endl;

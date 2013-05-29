@@ -91,6 +91,8 @@ int main(int argc, char **argv)
     ssa.params().readParams(configStream);
     configStream.close();
     ssa.params().printParams();
+  } else {
+   ssa.params().set2DDefaultParams();
   }
 
   if (! logfile){
