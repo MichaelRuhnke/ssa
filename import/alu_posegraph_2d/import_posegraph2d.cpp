@@ -35,12 +35,12 @@ namespace ssa {
 
     VertexSE2* previousVertex = 0;
     while(is){
-      char buf[4096];
-      is.getline(buf,4096);
+      char buf[40960];
+      is.getline(buf,40960);
       istringstream ls(buf);
       string tag;
       ls >> tag;
-      if (tag=="VERTEX" || tag=="VERTEX2"){
+      if (tag=="VERTEX" || tag=="VERTEX2" || tag=="VERTEX_SE2"){
         int id;
         double x,y,theta;
         ls >> id >> x >> y >> theta;
@@ -51,7 +51,7 @@ namespace ssa {
 
         ssaGraph.addVertex(v);
         previousVertex = v;
-      } else if (tag=="EDGE" || tag=="EDGE2"){
+      } else if (tag=="EDGE" || tag=="EDGE2" || tag=="EDGE_SE2"){
         int id1, id2;
         double x,y,theta;
         ls >> id1 >> id2 >> x >> y >> theta;
