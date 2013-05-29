@@ -137,6 +137,10 @@ namespace ssa {
     double beamAngle = angle;
     for(unsigned int i = 0; i < ranges.size(); i++){
       double range = ranges[i];
+      if(range >= maxrange){
+	beamAngle += res;
+	continue;
+      }
       Vector2d endpoint(range,0);
       SE2 beam = SE2(0.0,0.0,beamAngle);
       endpoint = laserOffSet * beam * endpoint; // in robot frame
