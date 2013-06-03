@@ -34,7 +34,7 @@ using namespace std;
 
 const char *message[]={
   "ssa_to_pgm: computes a frequency map out of a ssa file",
-  "usage mapg_ssa_to_fmap [options] <ssa_file>",
+  "usage ssa_to_pgm [options] <ssa_file>",
   "options:",
   " -res         <meters>                : the resolution of a grid cell",
   "                                        default [0.1m]",
