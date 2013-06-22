@@ -54,7 +54,7 @@ int main(int argc, char **argv)
       cout << *v << endl;
       v++;
     }
-    return 0; 
+    return 0;
   }
 
   const char* outputFile=0;
@@ -69,17 +69,17 @@ int main(int argc, char **argv)
       c++;
       every=atoi(argv[c]);
       c++;
-    } else 
+    } else
     if (!strcmp(argv[c],"-n")){
       c++;
       numOfScans=atoi(argv[c]);
       c++;
-    } else 
+    } else
     if (!strcmp(argv[c],"-p")){
       c++;
       pcPrefix=argv[c];
       c++;
-    } else 
+    } else
     if (!strcmp(argv[c],"-r")){
       c++;
       voxelSize=atof(argv[c]);
@@ -103,14 +103,24 @@ int main(int argc, char **argv)
 
   PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGBA> >  pclToSSA;
   //pclToSSA.setInput(&clouds);
-  pclToSSA.setSensor(PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGBA> >::KINECT);
-  pclToSSA.setLevels(3);
-  pclToSSA.setResolution(0, 0.001);
-  pclToSSA.setResolution(1, 0.005);
-  pclToSSA.setResolution(2, 0.01);
-  pclToSSA.setResolution(3, 0.02);
-  pclToSSA.setResolution(4, 0.05);
+  if(useLMS){
+    pclToSSA.setSensor(PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGBA> >::LMS);
+    pclToSSA.setLevels(4);
+    pclToSSA.setResolution(0, 0.001);
+    pclToSSA.setResolution(1, 0.01);
+    pclToSSA.setResolution(2, 0.1);
+    pclToSSA.setResolution(3, 0.2);
+    pclToSSA.params().normalExtractionMaxNeighborDistance = 1.0;
+  } else {
+    pclToSSA.setSensor(PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGBA> >::KINECT);
+    pclToSSA.setLevels(3);
+    pclToSSA.setResolution(0, 0.001);
+    pclToSSA.setResolution(1, 0.005);
+    pclToSSA.setResolution(2, 0.01);
+    pclToSSA.setResolution(3, 0.02);
+    pclToSSA.setResolution(4, 0.05);
   pclToSSA.params().normalExtractionMaxNeighborDistance = 0.5;
+  }
   pclToSSA.params().normalExtractionMinNeighbors = 9;
 
   for(int i = 0; i < numOfScans; i=i+every)
