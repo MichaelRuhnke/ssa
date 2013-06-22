@@ -6,6 +6,8 @@ edge_se3_xyzcov.h
 edge_se3_xyzcov.cpp
 edge_xyzcov_xyzcov.h
 edge_xyzcov_xyzcov.cpp
+observation_point_xyz_rgb_normal.h
+observation_point_xyz_rgb_normal.cpp
 )
 
 SET_TARGET_PROPERTIES(types_3d PROPERTIES OUTPUT_NAME ${LIB_PREFIX}types_3d)
