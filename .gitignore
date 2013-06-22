@@ -10,3 +10,12 @@
 *.lai
 *.la
 *.a
+
+*.gz
+*.ssa2d
+*.ssa3d
+*.pgm
+bin/
+build/
+lib/
+EXTERNAL/g2o
