@@ -18,28 +18,28 @@ PCLSSAHierarchicalT<PointCloudType>::setInput (std::vector< PointCloudType >* cl
 }
 
 template <typename PointCloudType>
-void 
+void
 PCLSSAHierarchicalT<PointCloudType>::setSensor (Sensor sensor)
 {
   sensor_ = sensor;
 }
 
 template <typename PointCloudType>
-void 
+void
 PCLSSAHierarchicalT<PointCloudType>::setLevels (int levels)
 {
   levels_ = levels;
 }
 
 template <typename PointCloudType>
-void 
+void
 PCLSSAHierarchicalT<PointCloudType>::setResolution (int level, double resolution)
 {
   resolution_[level] = resolution;
 }
 
 template <typename PointCloudType>
-void 
+void
 PCLSSAHierarchicalT<PointCloudType>::optimize (PointCloudType & result)
 {
   std::cerr << __PRETTY_FUNCTION__ << ": not yet implemented" << std::endl;
@@ -47,7 +47,7 @@ PCLSSAHierarchicalT<PointCloudType>::optimize (PointCloudType & result)
 }
 
 template <typename PointCloudType>
-  int 
+  int
   PCLSSAHierarchicalT<PointCloudType>::addCloudToGraph(SparseSurfaceAdjustmentGraph3D& graph, typename PointCloudType::Ptr cloud)
   {
     if(cloud->size() == 0)
@@ -58,7 +58,7 @@ template <typename PointCloudType>
 
     //Create pose vertex
     Eigen::Affine3f pose = getPose(cloud);
-    VertexSE3* vertex = createVertexSE3(pose); 
+    VertexSE3* vertex = createVertexSE3(pose);
     int id = graph.addVertex(vertex);
 
     Observation<VertexPointXYZCov> observation;
@@ -98,7 +98,7 @@ template <typename PointCloudType>
       if(vp->covariance() != Eigen::Matrix3d::Identity()){
         EdgeSE3PointXYZCov* e = new EdgeSE3PointXYZCov;
         e->vertices()[0] = vertex;
-        e->vertices()[1] = vp; 
+        e->vertices()[1] = vp;
         Vector3d measurement = vp->estimate();
         e->setMeasurement(measurement);
         e->setLevel(0);
@@ -134,7 +134,7 @@ template <typename PointCloudType>
         int levelCount = 0;
         pcl::VoxelGrid< typename PointCloudType::PointType > sor;
         sor.setInputCloud (boost::make_shared<PointCloudType >(cleanCloud));
-        sor.setLeafSize (resolution, resolution, resolution); 
+        sor.setLeafSize (resolution, resolution, resolution);
         sor.setDownsampleAllData(false);
         PointCloudType tmpCloud;
         sor.filter(tmpCloud);
@@ -168,7 +168,7 @@ template <typename PointCloudType>
 
   template <>
   pcl::PointCloud<pcl::PointXYZRGB>
-  PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGB> >::landmarksToPointCloud(std::vector<EdgeSE3PointXYZCov* >& landmarksFromVertex)
+  PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGB> >::landmarksToPointCloud(std::vector<EdgeSE3PointXYZCov* >& landmarksFromVertex, bool useRawMeasurements)
   {
     pcl::PointCloud<pcl::PointXYZRGB> cloud;
     for(unsigned int k = 0; k < landmarksFromVertex.size(); k++)
@@ -176,19 +176,19 @@ template <typename PointCloudType>
       EdgeSE3PointXYZCov*& edge = landmarksFromVertex[k];
       VertexSE3* pose  = dynamic_cast<VertexSE3* >(edge->vertices()[0]);
       VertexPointXYZCov* point = dynamic_cast<VertexPointXYZCov* >(edge->vertices()[1]);
-      pcl::PointXYZRGB p; 
+      pcl::PointXYZRGB p;
 
       if(point->covariance() == Eigen::Matrix3d::Identity())
         continue;
-
-      p.x = (pose->estimate() * edge->measurement())[0];
-      p.y = (pose->estimate() * edge->measurement())[1];
-      p.z = (pose->estimate() * edge->measurement())[2];
-
-//       p.x = point->estimate()[0];
-//       p.y = point->estimate()[1];
-//       p.z = point->estimate()[2];
-
+      if(useRawMeasurements){
+        p.x = (pose->estimate() * edge->measurement())[0];
+        p.y = (pose->estimate() * edge->measurement())[1];
+        p.z = (pose->estimate() * edge->measurement())[2];
+      } else {
+        p.x = point->estimate()[0];
+        p.y = point->estimate()[1];
+        p.z = point->estimate()[2];
+      }
       RGBToPclRGB(p.rgb, point->cr, point->cg, point->cb);
       cloud.push_back(p);
     }
@@ -197,7 +197,7 @@ template <typename PointCloudType>
 
   template <>
   pcl::PointCloud<pcl::PointXYZRGBA>
-  PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGBA> >::landmarksToPointCloud(std::vector<EdgeSE3PointXYZCov* >& landmarksFromVertex)
+  PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGBA> >::landmarksToPointCloud(std::vector<EdgeSE3PointXYZCov* >& landmarksFromVertex, bool useRawMeasurements)
   {
     pcl::PointCloud<pcl::PointXYZRGBA> cloud;
     for(unsigned int k = 0; k < landmarksFromVertex.size(); k++)
@@ -205,14 +205,20 @@ template <typename PointCloudType>
       EdgeSE3PointXYZCov*& edge = landmarksFromVertex[k];
       VertexSE3* pose  = dynamic_cast<VertexSE3* >(edge->vertices()[0]);
       VertexPointXYZCov* point = dynamic_cast<VertexPointXYZCov* >(edge->vertices()[1]);
-      pcl::PointXYZRGBA p; 
+      pcl::PointXYZRGBA p;
 
       if(point->covariance() == Eigen::Matrix3d::Identity())
         continue;
 
-      p.x = (pose->estimate() * edge->measurement())[0];
-      p.y = (pose->estimate() * edge->measurement())[1];
-      p.z = (pose->estimate() * edge->measurement())[2];
+      if(useRawMeasurements){
+        p.x = (pose->estimate() * edge->measurement())[0];
+        p.y = (pose->estimate() * edge->measurement())[1];
+        p.z = (pose->estimate() * edge->measurement())[2];
+      } else {
+        p.x = point->estimate()[0];
+        p.y = point->estimate()[1];
+        p.z = point->estimate()[2];
+      }
 
       RGBToPclRGB(p.rgba, point->cr, point->cg, point->cb);
       cloud.push_back(p);
@@ -221,7 +227,39 @@ template <typename PointCloudType>
   }
 
   template <>
-  pcl::PointCloud<pcl::PointXYZRGB> 
+  pcl::PointCloud<pcl::PointXYZRGBNormal>
+  PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGBNormal> >::landmarksToPointCloud(std::vector<EdgeSE3PointXYZCov* >& landmarksFromVertex, bool useRawMeasurements)
+  {
+
+    pcl::PointCloud<pcl::PointXYZRGBNormal> cloud;
+    for(unsigned int k = 0; k < landmarksFromVertex.size(); k++)
+    {
+      EdgeSE3PointXYZCov*& edge = landmarksFromVertex[k];
+      VertexSE3* pose  = dynamic_cast<VertexSE3* >(edge->vertices()[0]);
+      VertexPointXYZCov* point = dynamic_cast<VertexPointXYZCov* >(edge->vertices()[1]);
+      pcl::PointXYZRGBNormal p;
+
+      if(point->covariance() == Eigen::Matrix3d::Identity())
+        continue;
+
+      if(useRawMeasurements){
+        p.x = (pose->estimate() * edge->measurement())[0];
+        p.y = (pose->estimate() * edge->measurement())[1];
+        p.z = (pose->estimate() * edge->measurement())[2];
+      } else {
+        p.x = point->estimate()[0];
+        p.y = point->estimate()[1];
+        p.z = point->estimate()[2];
+      }
+
+      RGBToPclRGB(p.rgb, point->cr, point->cg, point->cb);
+      cloud.push_back(p);
+    }
+    return cloud;
+  }
+
+  template <>
+  pcl::PointCloud<pcl::PointXYZRGB>
   PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGB> >::landmarksToPointCloud(Observation<VertexPointXYZCov>& pointVertices){
     pcl::PointCloud<pcl::PointXYZRGB> cloud;
     for(unsigned int k = 0; k < pointVertices.size(); k++)
@@ -229,7 +267,7 @@ template <typename PointCloudType>
       VertexPointXYZCov* point = pointVertices[k];
       if(point->covariance() == Eigen::Matrix3d::Identity())
         continue;
-      pcl::PointXYZRGB p; 
+      pcl::PointXYZRGB p;
 
       p.x = point->estimate()[0];
       p.y = point->estimate()[1];
@@ -242,7 +280,7 @@ template <typename PointCloudType>
   }
 
   template <>
-  pcl::PointCloud<pcl::PointXYZRGBA> 
+  pcl::PointCloud<pcl::PointXYZRGBA>
   PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGBA> >::landmarksToPointCloud(Observation<VertexPointXYZCov>& pointVertices){
     pcl::PointCloud<pcl::PointXYZRGBA> cloud;
     for(unsigned int k = 0; k < pointVertices.size(); k++)
@@ -250,7 +288,7 @@ template <typename PointCloudType>
       VertexPointXYZCov* point = pointVertices[k];
       if(point->covariance() == Eigen::Matrix3d::Identity())
         continue;
-      pcl::PointXYZRGBA p; 
+      pcl::PointXYZRGBA p;
 
       p.x = point->estimate()[0];
       p.y = point->estimate()[1];
@@ -269,37 +307,7 @@ template <typename PointCloudType>
   }
 
   template <>
-  pcl::PointCloud<pcl::PointXYZRGBNormal> 
-  PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGBNormal> >::landmarksToPointCloud(std::vector<EdgeSE3PointXYZCov* >& landmarksFromVertex)
-  {
-
-    pcl::PointCloud<pcl::PointXYZRGBNormal> cloud;
-    for(unsigned int k = 0; k < landmarksFromVertex.size(); k++)
-    {
-      EdgeSE3PointXYZCov*& edge = landmarksFromVertex[k];
-      VertexSE3* pose  = dynamic_cast<VertexSE3* >(edge->vertices()[0]);
-      VertexPointXYZCov* point = dynamic_cast<VertexPointXYZCov* >(edge->vertices()[1]);
-      pcl::PointXYZRGBNormal p; 
-
-      if(point->covariance() == Eigen::Matrix3d::Identity())
-        continue;
-
-      p.x = (pose->estimate() * edge->measurement())[0];
-      p.y = (pose->estimate() * edge->measurement())[1];
-      p.z = (pose->estimate() * edge->measurement())[2];
-
-//       p.x = point->estimate()[0];
-//       p.y = point->estimate()[1];
-//       p.z = point->estimate()[2];
-
-      RGBToPclRGB(p.rgb, point->cr, point->cg, point->cb);
-      cloud.push_back(p);
-    }
-    return cloud;
-  }
-
-  template <>
-  pcl::PointCloud<pcl::PointXYZRGBNormal> 
+  pcl::PointCloud<pcl::PointXYZRGBNormal>
   PCLSSAHierarchicalT< pcl::PointCloud<pcl::PointXYZRGBNormal> >::landmarksToPointCloud(Observation<VertexPointXYZCov>& pointVertices){
     pcl::PointCloud<pcl::PointXYZRGBNormal> cloud;
     for(unsigned int k = 0; k < pointVertices.size(); k++)
@@ -307,7 +315,7 @@ template <typename PointCloudType>
       VertexPointXYZCov* point = pointVertices[k];
       if(point->covariance() == Eigen::Matrix3d::Identity())
         continue;
-      pcl::PointXYZRGBNormal p; 
+      pcl::PointXYZRGBNormal p;
 
       p.x = point->estimate()[0];
       p.y = point->estimate()[1];
@@ -325,7 +333,7 @@ template <typename PointCloudType>
   }
 
   template <typename PointCloudType>
-  void 
+  void
   PCLSSAHierarchicalT<PointCloudType>::pclRGBToRGB(float& rgb, uint& r, uint& g, uint& b)
   {
     //convert color information
@@ -336,7 +344,7 @@ template <typename PointCloudType>
   }
 
   template <typename PointCloudType>
-  void 
+  void
   PCLSSAHierarchicalT<PointCloudType>::pclRGBToRGB(float& rgb, unsigned char& r, unsigned char& g, unsigned char& b)
   {
     //convert color information
@@ -347,7 +355,7 @@ template <typename PointCloudType>
   }
 
   template <typename PointCloudType>
-  void 
+  void
   PCLSSAHierarchicalT<PointCloudType>::RGBToPclRGB(float& rgb, uint& r, uint& g, uint& b)
   {
     //convert color information
@@ -359,7 +367,7 @@ template <typename PointCloudType>
   }
 
   template <typename PointCloudType>
-  void 
+  void
   PCLSSAHierarchicalT<PointCloudType>::RGBToPclRGB(float& rgb, unsigned char& r, unsigned char& g, unsigned char& b)
   {
     //convert color information
@@ -371,7 +379,7 @@ template <typename PointCloudType>
   }
 
   template <typename PointCloudType>
-  void 
+  void
   PCLSSAHierarchicalT<PointCloudType>::RGBToPclRGB(uint32_t& rgb, unsigned char& r, unsigned char& g, unsigned char& b)
   {
     //convert color information
@@ -383,14 +391,14 @@ template <typename PointCloudType>
   }
 
   template <typename PointCloudType>
-  Eigen::Affine3f 
+  Eigen::Affine3f
   PCLSSAHierarchicalT<PointCloudType>::getPose(PointCloudType& cloud){
     Eigen::Affine3f pose = (Eigen::Affine3f)Eigen::Translation3f(cloud.sensor_origin_(0), cloud.sensor_origin_(1), cloud.sensor_origin_(2)) * cloud.sensor_orientation_;
     return pose;
   }
 
   template <typename PointCloudType>
-  Eigen::Affine3f 
+  Eigen::Affine3f
   PCLSSAHierarchicalT<PointCloudType>::getPose(PointCloudPtr& cloudPtr){
     Eigen::Affine3f pose = (Eigen::Affine3f)Eigen::Translation3f(cloudPtr->sensor_origin_(0), cloudPtr->sensor_origin_(1), cloudPtr->sensor_origin_(2)) * cloudPtr->sensor_orientation_;
     return pose;
@@ -398,24 +406,24 @@ template <typename PointCloudType>
 
 
   template <typename PointCloudType>
-  g2o::VertexSE3* 
+  g2o::VertexSE3*
   PCLSSAHierarchicalT<PointCloudType>::createVertexSE3(Eigen::Affine3f pose){
     ///Create pose vertex
-    VertexSE3* vertex = new VertexSE3(); 
+    VertexSE3* vertex = new VertexSE3();
     vertex->setId(0);
     vertex->setEstimate(Affine3fToSE3Quat(pose));
     return vertex;
   }
 
   template <typename PointCloudType>
-  g2o::VertexSE3* 
+  g2o::VertexSE3*
   PCLSSAHierarchicalT<PointCloudType>::createVertexSE3(PointCloudType& cloud){
     return createVertexSE3(getPose(cloud));
   }
 
 
   template <typename PointCloudType>
-  g2o::VertexSE3* 
+  g2o::VertexSE3*
   PCLSSAHierarchicalT<PointCloudType>::createVertexSE3(PointCloudPtr& cloudPtr){
     return createVertexSE3(getPose(cloudPtr));
   }
@@ -436,12 +444,12 @@ template <typename PointCloudType>
        hsv(0) = -1;
        return;
      }
- 
+
      if (rgb(0) == hsv(2))
        hsv(0) = (rgb(1) - rgb(2)) / (hsv(2) - min);
      else if (rgb(1) == hsv(2))
        hsv(0) = 2 + (rgb(2) - rgb(0)) / (hsv(2) - min);
-     else 
+     else
        hsv(0) = 4 + (rgb(0) - rgb(1)) / (hsv(2) - min);
      hsv(0) *= 60;
      if (hsv(0) < 0)

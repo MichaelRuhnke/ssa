@@ -219,7 +219,8 @@ namespace ssa{
           std::cerr << "Error: NEGATIVE INFORMATION MATRIX... THIS SHOULD NOT HAPPEN..." << std::endl;
           std::cerr << "SLAMEdgeType " << chi2 << "\t";
           std::cerr << e1->information() << std::endl;
-          e1->information() = -1.0 * e1->information();
+          //e1->information() = -1.0 * e1->information();
+          e1->information().setIdentity();
           //exit(-1);
         }
         _edges_odometry.push_back(e1);
@@ -483,7 +484,7 @@ namespace ssa{
 //           neighbors++;
 //       }
       if(neighbors < minNeighbors){
-          v->covariance() = PointMatrix::Identity();
+//           v->covariance() = PointMatrix::Identity();
       } else {
         //cerr << "neighbors " << neighbors << std::endl;
       }
@@ -576,7 +577,7 @@ namespace ssa{
     maxVertexId = std::max(maxVertexId, v->id());
     if(maxVertexId == 0)
       v->setFixed(true);
-    if(v->id() == 0) /** if vertex id is not set */
+    if(v->id() <= 0) /** if vertex id is not set */
       v->setId(maxVertexId++);
     /** add to optimizer and internal pose struct */
     _optimizer.addVertex(v);
@@ -589,7 +590,7 @@ namespace ssa{
   {
     /** Handling for automatic vertex ids */
     maxVertexId = std::max(maxVertexId, v->id());
-    if(v->id() == 0) /** if vertex id is not set */
+    if(v->id() <= 0) /** if vertex id is not set */
       v->setId(maxVertexId++);
     /** add to optimizer and internal pose struct */
     _optimizer.addVertex(v);
@@ -649,8 +650,10 @@ namespace ssa{
     std::vector<PoseVertex* > parents = v->parentVertices();
     for(typename std::vector<PoseVertex* >::const_iterator it = parents.begin(); it != parents.end(); ++it)
     {
-      Observation<PointVertex>& observation = _verticies_observations[(*it)->id()];
-      observation.removeVertex(v);
+      if((*it)->id() < (int) _verticies_observations.size()){
+        Observation<PointVertex>& observation = _verticies_observations[(*it)->id()];
+        observation.removeVertex(v);
+      }
     }
 
     typename std::vector<PointVertex* >::iterator itt = std::find(_verticies_points.begin(), _verticies_points.end(), v);

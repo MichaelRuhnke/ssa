@@ -1301,6 +1301,7 @@ int main(int argc, char **argv)
     } else
     if (!strcmp(argv[c],"-h")){
       usage();
+      exit(0);
       c++;
     }
   }

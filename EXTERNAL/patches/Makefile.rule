@@ -1,5 +1,5 @@
 #
-#  Beginning of user configuration 
+#  Beginning of user configuration
 #
 
 # This library's version
@@ -38,7 +38,7 @@ USE_OPENMP = 1
 # You can define maximum number of threads. Basically it should be
 # less than actual number of cores. If you don't specify one, it's
 # automatically detected by the the script.
-NUM_THREADS = 12
+NUM_THREADS = 4
 
 # If you don't need CBLAS interface, please comment it in.
 # NO_CBLAS = 1
@@ -91,5 +91,5 @@ COMMON_OPT += -O2
 COMMON_PROF = -pg
 
 #
-#  End of user configuration 
+#  End of user configuration
 #

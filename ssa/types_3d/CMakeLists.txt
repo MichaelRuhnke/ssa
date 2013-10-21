@@ -6,6 +6,12 @@ edge_se3_xyzcov.h
 edge_se3_xyzcov.cpp
 edge_xyzcov_xyzcov.h
 edge_xyzcov_xyzcov.cpp
+vertex_point_xyz_normal.h
+vertex_point_xyz_normal.cpp
+edge_se3_point_xyz_normal.h
+edge_se3_point_xyz_normal.cpp
+edge_xyznormal_xyznormal.h
+edge_xyznormal_xyznormal.cpp
 observation_point_xyz_rgb_normal.h
 observation_point_xyz_rgb_normal.cpp
 )

@@ -11,13 +11,27 @@ ADD_EXECUTABLE(pcd_to_ssa
   pcd_to_ssa.cpp
 )
 
-TARGET_LINK_LIBRARIES(pcd_to_ssa  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
+TARGET_LINK_LIBRARIES(pcd_to_ssa  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${Boost_SYSTEM_LIBRARY} ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
 
 ADD_EXECUTABLE(pcd_to_ssa_rgb
   pcd_to_ssa_rgb.cpp
 )
+TARGET_LINK_LIBRARIES(pcd_to_ssa_rgb  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${Boost_SYSTEM_LIBRARY} ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
 
-TARGET_LINK_LIBRARIES(pcd_to_ssa_rgb  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
+
+ADD_EXECUTABLE(pcd_ssa_test
+  pcd_ssa_test.cpp
+)
+
+TARGET_LINK_LIBRARIES(pcd_ssa_test  ssa_core types_3d g2o_types_slam3d g2o_core g2o_types_icp g2o_stuff flann sensor_models ${Boost_SYSTEM_LIBRARY} ${PCL_LIBRARIES} g2o_solver_cholmod ${CHOLMOD_LIBRARIES} ${BLAS_LIBRARIES} g2o_solver_csparse g2o_csparse_extension ${CSPARSE_LIBRARY})
+
+INSTALL(TARGETS pcd_ssa_test
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+
+
 
 #ADD_EXECUTABLE(ply_to_ssa_rgb
   #ply_to_ssa_rgb.cpp
@@ -30,10 +44,24 @@ ADD_EXECUTABLE(ssa_to_pcd
   ssa_to_pcd.cpp
 )
 
-TARGET_LINK_LIBRARIES(ssa_to_pcd  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
+TARGET_LINK_LIBRARIES(ssa_to_pcd  ssa_core types_3d g2o_types_slam3d g2o_core flann sensor_models ${Boost_SYSTEM_LIBRARY} ${PCL_COMMON_LIBRARY} ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} )
 
 
 INSTALL(TARGETS pcd_to_ssa
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+
+
+ADD_EXECUTABLE(pcd_add_normal
+  pcd_add_normal.cpp
+)
+
+TARGET_LINK_LIBRARIES(pcd_add_normal ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+          ${PCL_IO_LIBRARY} ${PCL_COMMON_LIBRARY} ${PCL_KDTREE_LIBRARY} ${PCL_FEATURES_LIBRARY} ${PCL_KEYPOINTS_LIBRARY} ${PCL_FILTERS_LIBRARY} ${PCL_SEARCH_LIBRARY})
+
+INSTALL(TARGETS pcd_add_normal
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib

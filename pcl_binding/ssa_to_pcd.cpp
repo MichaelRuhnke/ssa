@@ -53,11 +53,11 @@ int main(int argc, char **argv)
       pcPrefix=argv[c];
       c++;
       saveViews = true;
-    } 
+    }
     if (!strcmp(argv[c],"-r")){
       reproject=true;
       c++;
-    } 
+    }
     if (! ssaFile){
       ssaFile=argv[c];
       c++;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
   ssaGraph.load(ssaFile);
   pcl::PointCloud<pcl::PointXYZRGBA> cloud;
   if(reproject){
-    cloud = PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGBA> >::landmarksToPointCloud(ssaGraph._edges_observations);
+    cloud = PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGBA> >::landmarksToPointCloud(ssaGraph._edges_observations, reproject);
   } else {
     int i = 0;
     std::map<int, int> keys = ssaGraph.getScanIds();
@@ -87,22 +87,22 @@ int main(int argc, char **argv)
 
       //copy points to global point cloud
       std::copy(tmp.points.begin(), tmp.points.end(), back_inserter(cloud.points));
-  
+
       if(saveViews){
         //transform points in local coordinate frame (scan)
         g2o::VertexSE3* v = dynamic_cast<g2o::VertexSE3*>(ssaGraph._optimizer.vertex(scanId));
         Eigen::Affine3f transformation = v->estimate().cast<float>();
         pcl::transformPointCloud(tmp, tmp, transformation.inverse());
-    
+
         float x, y, z, roll, pitch, yaw;
         pcl::getTranslationAndEulerAngles(transformation, x, y, z, roll, pitch, yaw);
-    
+
         tmp.sensor_origin_(0) = x;
         tmp.sensor_origin_(1) = y;
         tmp.sensor_origin_(2) = z;
         tmp.sensor_origin_(3) = 1;
         tmp.sensor_orientation_ = transformation.rotation();
-    
+
         char filename[128];
         sprintf(filename, "%s%05d.pcd", pcPrefix.c_str(), i);
         cerr << "saving file:"  << filename << endl;

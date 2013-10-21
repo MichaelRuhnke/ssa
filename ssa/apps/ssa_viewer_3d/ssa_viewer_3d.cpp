@@ -1,16 +1,16 @@
 // Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -62,6 +62,7 @@ int main(int argc, char **argv)
   const char* viewerStateFile=0;
   bool useConfigFile = false;
   const char* configFile=0;
+  int level = 1;
   int c=1;
   while (c<argc){
     if (!strcmp(argv[c],"-cam")){
@@ -69,25 +70,30 @@ int main(int argc, char **argv)
       c++;
       viewerStateFile = argv[c];
       c++;
-    } else 
+    } else
+    if (!strcmp(argv[c],"-level")){
+      c++;
+      level = atoi(argv[c]);
+      c++;
+    } else
     if (!strcmp(argv[c],"-ini")){
       useConfigFile=true;
       c++;
       configFile = argv[c];
       c++;
-    } else 
+    } else
     if (!strcmp(argv[c],"-video")){
       dumpScreenshots=true;
       c++;
       viewerStateFile = argv[c];
       c++;
-    } else 
+    } else
     if (!strcmp(argv[c],"-save")){
       saveOutput=true;
       c++;
       outfile = argv[c];
       c++;
-    } else 
+    } else
     if (! logfile){
       logfile=argv[c];
       c++;
@@ -121,6 +127,7 @@ int main(int argc, char **argv)
     umw.setupUi(mw);
 
     umw.ssaGLWidget->setMap(ssa.graph());
+    umw.spinBox_2->setValue(level);
     mw->show();
     umw.ssaGLWidget->setBackgroundColor(qRgb(211, 211, 211));
     if(restoreViewerState){
@@ -129,8 +136,8 @@ int main(int argc, char **argv)
     }
 
     umw.ssaGLWidget->_iterations = ssa.params().ssaIterations;
-    umw.doubleSpinBox_3->setValue(ssa.params().normalShooting.stepSize); 
-    umw.doubleSpinBox_4->setValue(ssa.params().normalShooting.steps); 
+    umw.doubleSpinBox_3->setValue(ssa.params().normalShooting.stepSize);
+    umw.doubleSpinBox_4->setValue(ssa.params().normalShooting.steps);
     umw.doubleSpinBox_5->setValue(ssa.params().normalShooting.maxAngleDifference);
 
     QObject::connect( &(ssa.graph()->_optimizer), SIGNAL(iterationDone()), umw.ssaGLWidget, SLOT(Gen3DObjectList_update()));
@@ -175,8 +182,8 @@ int main(int argc, char **argv)
         //filling selected gui params into ssa params
         ssa.params().ssaIterations = umw.ssaGLWidget->_iterations;
         //ssa.params().g2oIterations = 6;
-        ssa.params().normalShooting.stepSize = umw.doubleSpinBox_3->value(); 
-        ssa.params().normalShooting.steps = (int) umw.doubleSpinBox_4->value(); 
+        ssa.params().normalShooting.stepSize = umw.doubleSpinBox_3->value();
+        ssa.params().normalShooting.steps = (int) umw.doubleSpinBox_4->value();
         ssa.params().normalShooting.maxAngleDifference = umw.doubleSpinBox_5->value();
         ssa.params().printParams();
         cerr << "optimizing level " << umw.spinBox_2->value() << endl;
@@ -184,7 +191,7 @@ int main(int argc, char **argv)
         //ssa.optimize(ssa.graph()->getMaxLevel());
         umw.ssaGLWidget->Gen3DObjectList_update();
         umw.ssaGLWidget->updateGL();
-	  
+
         umw.stateLabel->setText(QString("ready"));
         palette.setColor(umw.stateLabel->backgroundRole(), Qt::green);
         umw.stateLabel->setPalette(palette);
@@ -216,14 +223,14 @@ int main(int argc, char **argv)
 	  subset.createSubset(ssa.graph(), ssa.params());
 	  umw.ssaGLWidget->Gen3DObjectList_update();
           umw.ssaGLWidget->updateGL();
-	  std::cerr << "done" << std::endl;;	  
-	  
+	  std::cerr << "done" << std::endl;;
+
 //         ssa.graph()->calcMeanCov(ssa.params());
 //         ssa.graph()->dropDataAssociation();
 //         DataAssociationT<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov> da_kdtree;
 //         da_kdtree.setStrategy(DataAssociationT<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov>::KDTREE);
 //         da_kdtree.apply(*ssa.graph(), ssa.params(), 0);
-// 
+//
 //         std::cerr << "Filter outlier...";
 //         ssa.graph()->filterOutlier(ssa.params().outlierRejectionMinConnectedNeighbors);
 //         std::cerr << "done" << std::endl;
@@ -232,16 +239,16 @@ int main(int argc, char **argv)
 //         std::cerr << "done" << std::endl;
 //         umw.ssaGLWidget->Gen3DObjectList_update();
 //         ssa.graph()->dropDataAssociation();
-        
+
 //           if(ssa.graph()->_edges_data_association.size() == 0){
-//           
+//
 //             //filling selected gui params into ssa params
 //             ssa.params().ssaIterations = umw.ssaGLWidget->_iterations;
-//             ssa.params().normalShooting.stepSize = umw.doubleSpinBox_3->value(); 
-//             ssa.params().normalShooting.steps = (int) umw.doubleSpinBox_4->value(); 
+//             ssa.params().normalShooting.stepSize = umw.doubleSpinBox_3->value();
+//             ssa.params().normalShooting.steps = (int) umw.doubleSpinBox_4->value();
 //             ssa.params().normalShooting.maxAngleDifference = umw.doubleSpinBox_5->value();
 //             ssa.params().printParams();
-//     
+//
 //             ssa.graph()->dropDataAssociation();
 //             //ssa.graph()->calcMeanCov(ssa.params().normalExtractionMaxNeighborDistance);
 //             //NormalShootingFlann<g2o::EdgeSE3, ssa::EdgeSE3PointXYZCov, ssa::EdgePointXYZCovPointXYZCov>::shootNormals(*ssa.graph(), ssa.params().normalShooting);

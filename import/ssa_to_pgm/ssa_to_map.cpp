@@ -132,7 +132,7 @@ int main (int argc, const char ** argv){
     ssa::EdgeSE2PointXYCov* edge=dynamic_cast<ssa::EdgeSE2PointXYCov*>(*it);
     if(edge){
       g2o::VertexSE2*         vp1=dynamic_cast<g2o::VertexSE2*>(edge->vertices()[0]);
-      ssa::VertexPointXYCov* vp2=dynamic_cast<ssa::VertexPointXYCov*>(edge->vertices()[1]);
+      ssa::VertexPointXYCov*  vp2=dynamic_cast<ssa::VertexPointXYCov*>(edge->vertices()[1]);
       if(vp1 && vp2){
         Eigen::Vector2f rp= Eigen::Vector2f(vp1->estimate().translation()(0), vp1->estimate().translation()(1));
         Eigen::Vector2i start= world2map(rp, offset, resolution);
@@ -148,6 +148,7 @@ int main (int argc, const char ** argv){
 
         static ssa::GridLineTraversalLine line;
         Eigen::Vector2f bp(vp2->estimate()(0),  vp2->estimate()(1));
+        //Eigen::Vector2f bp((vp1->estimate() * edge->measurement())(0), (vp1->estimate() * edge->measurement())(1));
         Eigen::Vector2i end = world2map(bp, offset, resolution);
         ssa::GridLineTraversal::gridLine(start, end, &line);
 

@@ -113,12 +113,13 @@ int main(int argc, char **argv)
     pclToSSA.params().normalExtractionMaxNeighborDistance = 1.0;
   } else {
     pclToSSA.setSensor(PCLSSAHierarchicalT<pcl::PointCloud<pcl::PointXYZRGBA> >::KINECT);
-    pclToSSA.setLevels(3);
+    pclToSSA.setLevels(6);
     pclToSSA.setResolution(0, 0.001);
     pclToSSA.setResolution(1, 0.005);
     pclToSSA.setResolution(2, 0.01);
     pclToSSA.setResolution(3, 0.02);
-    pclToSSA.setResolution(4, 0.05);
+    pclToSSA.setResolution(4, 0.1);
+    pclToSSA.setResolution(5, 0.4);
   pclToSSA.params().normalExtractionMaxNeighborDistance = 0.5;
   }
   pclToSSA.params().normalExtractionMinNeighbors = 9;

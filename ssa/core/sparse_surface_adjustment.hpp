@@ -89,7 +89,7 @@ namespace ssa{
 
       //! Update point covariances and normals
       timing = get_time();
-      graph_.calcMeanCov(params());
+//       graph_.calcMeanCov(params());
       cerr << "Updating observation covariances took " << (get_time() - timing) * 1000 << " ms" << endl;
 
       /// Estimate data association
@@ -98,8 +98,7 @@ namespace ssa{
       /// use new abstract data association
       if(params().nearestNeighbor.maxSearchDistance > 0.0){
         DataAssociationT<EdgeType1, EdgeType2, EdgeType3> da_kdtree;
-
-	da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE);
+        da_kdtree.setStrategy(DataAssociationT<EdgeType1, EdgeType2, EdgeType3>::KDTREE);
         da_kdtree.apply(graph_, params(), level);
       }
 
@@ -116,25 +115,25 @@ namespace ssa{
       g2o::OptimizableGraph::EdgeSet eset = graph_.getEdgesetFast();
       cerr << "Edge set construction of size " << eset.size() << " took " << (get_time() - timing) * 1000 << " ms" << endl;
       ///avoid optimizer segfault
-      if(eset.size() == 0)
-       continue;
+//       if(eset.size() == 0)
+//        continue;
 
       /// initializeOptimization
       timing = get_time();
-      graph_._optimizer.initializeOptimization(eset);
+      graph_._optimizer.initializeOptimization();
       cerr << "initializeOptimization took " << (get_time() - timing) * 1000 << " ms" << endl;
 
       timing = get_time();
       if(level == 0){
-	graph_._optimizer.optimize(params().g2oIterations);
+        graph_._optimizer.optimize(params().g2oIterations);
       } else {
-	graph_._optimizer.optimize(1);
+        graph_._optimizer.optimize(1);
       }
       cerr << "g2o took " << (get_time() - timing) * 1000 << " ms" << endl;
 
       /// moveUnoptimizedPoints
       timing = get_time();
-      graph_.moveUnoptimizedPoints();
+//       graph_.moveUnoptimizedPoints();
       cerr << "moveUnoptimizedPoints took " << (get_time() - timing) * 1000 << " ms" << endl;
 
       cerr << "Iteration took " << (get_time() - iterationTime) * 1000 << " ms" << endl;

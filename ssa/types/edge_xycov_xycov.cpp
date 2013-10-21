@@ -34,7 +34,15 @@ namespace ssa {
     Vector2d normal = l1->globalNormal() + l2->globalNormal();
 //     double diff = rad2deg(acos(l1->globalNormal().normalized().dot(l2->globalNormal().normalized())));
 //     diff = 1.0 - (std::min(diff, 20.0 )/ 20.0);
-    normal.normalize();
+    double norm = normal.norm();
+    if(norm > 0){
+      normal /= norm;
+    } else {
+      std::cerr << __PRETTY_FUNCTION__ << " Detectected undefined normals! " << PVAR(chi2()) << " " <<  normal << " " <<   " " << std::endl;
+      information().setIdentity();
+      return;
+    }
+
     double angle = acos(normal.dot(x));
     information().setIdentity();
     information()(0,0) = 1000; /// corresponds to uncertainty of 1mm
@@ -42,8 +50,8 @@ namespace ssa {
     Eigen::Rotation2Dd rot(-angle);
     information() = rot.matrix() * information() * rot.matrix().transpose();
     //information() = l1->covariance().inverse() + l2->covariance().inverse();
-    if(chi2() < 0.0){
-      std::cerr << PVAR(chi2()) << " " <<  l1->covariance().inverse() << " " <<  l2->covariance().inverse() << " " << std::endl;
+    if(chi2() < 0.0 || std::isnan(chi2())){
+      std::cerr << PVAR(chi2()) << " " <<  information() << " " <<   " " << std::endl;
     }
   }
 

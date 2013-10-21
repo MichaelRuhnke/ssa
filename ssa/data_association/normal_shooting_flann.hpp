@@ -1,16 +1,16 @@
 // Sparse Surface Optimization
 // Copyright (C) 2011 M. Ruhnke, R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // SSA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SSA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -28,7 +28,7 @@ namespace ssa{
   };
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  void 
+  void
   NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::shootNormals(SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>& graph, NormalShootingParams& params)
   {
     if(params.steps < 2){
@@ -43,27 +43,27 @@ namespace ssa{
     kDTree.createKDTree();
 
     std::vector<int>  indices = graph.getPoseIds();
-    #pragma omp parallel for schedule(dynamic, 1) shared(graph, kDTree, params) 
+    #pragma omp parallel for schedule(dynamic, 1) shared(graph, kDTree, params)
     for(size_t i = 0; i < indices.size(); ++i)
     {
       int id = indices[i];
       shootNormals(graph, kDTree, id, params);
-    } 
+    }
   }
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  void 
+  void
   NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::shootNormals(SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>& graph, NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::PointTree& kDTree, int& scanId, NormalShootingParams& params)
   {
     /** get vertices of scan */
     Observation<typename SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>::PointVertex>& scan = graph._verticies_observations[scanId];
 
-    #pragma omp parallel for schedule(dynamic, 20) shared(scan, graph, params) 
+    #pragma omp parallel for schedule(dynamic, 20) shared(scan, graph, params)
     for(unsigned int k = 0; k < scan.size(); k=k+params.increment)
     {
       PointVertex*& point = scan[k];
       /** We apply normal shooting only if the normal is well defined */
-      if(point->fixed() || point->covariance() == PointMatrix::Identity())
+      if(point->fixed() || point->normal().norm() == 0)
         continue;
 
       PointVector normal = point->normal();
@@ -73,7 +73,7 @@ namespace ssa{
         PointVector delta;
         for(int i=0; i < Dj; ++i)
           delta(i) = ((l*params.stepSize)*normal(i));
-  
+
         vp->setEstimate(point->estimate() + delta);
 
         //FLANN
@@ -85,7 +85,7 @@ namespace ssa{
           if(graph.haveCommonSensorVertex(correspondence, point))
             continue;
 
-          if(CorrespondenceRejectionT<EdgeType1, EdgeType2, EdgeType3>::isValid(point, correspondence, params.maxAngleDifference, params.maxColorChannelDiff)) 
+          if(CorrespondenceRejectionT<EdgeType1, EdgeType2, EdgeType3>::isValid(point, correspondence, params.maxAngleDifference, params.maxColorChannelDiff))
           {
             EdgeType3* edge = graph.createEdge(correspondence, point);
             #pragma omp critical
@@ -105,7 +105,7 @@ namespace ssa{
 
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  void 
+  void
   NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::normalOutlierReject(SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>& graph, NormalShootingParams& params)
   {
     if(params.steps < 2){
@@ -120,16 +120,16 @@ namespace ssa{
     kDTree.createKDTree();
 
     std::vector<int>  indices = graph.getPoseIds();
-    #pragma omp parallel for schedule(dynamic, 1) shared(graph, kDTree, params) 
+    #pragma omp parallel for schedule(dynamic, 1) shared(graph, kDTree, params)
     for(size_t i = 0; i < indices.size(); ++i)
     {
       int id = indices[i];
       normalOutlierReject(graph, kDTree, id, params);
-    } 
+    }
   }
 
   template <typename EdgeType1, typename EdgeType2, typename EdgeType3>
-  void 
+  void
   NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::normalOutlierReject(SparseSurfaceAdjustmentGraphT<EdgeType1, EdgeType2, EdgeType3>& graph, NormalShootingFlann<EdgeType1, EdgeType2, EdgeType3>::PointTree& kDTree, int& scanId, NormalShootingParams& params)
   {
     /** get vertices of scan */
@@ -143,7 +143,7 @@ namespace ssa{
     {
       PointVertex*& point = scan[k];
       /** We apply normal shooting only if the normal is well defined */
-      if(point->covariance() == PointMatrix::Identity())
+      if(point->normal().norm() == 0.0)
         continue;
 
       PointVector normal = point->normal();
@@ -153,7 +153,7 @@ namespace ssa{
         PointVector delta;
         for(int i=0; i < Dj; ++i)
           delta(i) = ((l*params.stepSize)*normal(i));
-  
+
         vp->setEstimate(point->estimate() + delta);
 
         if(kDTree.radiusSearch(vp, params.stepSize, k_indices, k_squared_distances, 1) != 0){
@@ -161,12 +161,12 @@ namespace ssa{
           if(graph.haveCommonSensorVertex(correspondence, point))
             continue;
 
-          if(CorrespondenceRejectionT<EdgeType1, EdgeType2, EdgeType3>::isValid(point, correspondence, params.maxAngleDifference, params.maxColorChannelDiff)) 
+          if(CorrespondenceRejectionT<EdgeType1, EdgeType2, EdgeType3>::isValid(point, correspondence, params.maxAngleDifference, params.maxColorChannelDiff))
           {
           } else {
             if(l >= 0)
             {
-              correspondence->covariance() = PointMatrix::Identity();
+              correspondence->normal().setZero();
             }
           }
         }

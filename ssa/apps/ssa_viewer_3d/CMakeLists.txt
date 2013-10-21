@@ -20,7 +20,15 @@ ADD_EXECUTABLE(ssa_viewer_3d
 TARGET_LINK_LIBRARIES(ssa_viewer_3d ssa_core types_3d g2o_types_slam3d g2o_types_icp g2o_stuff g2o_core g2o_solver_cholmod ${CHOLMOD_LIBRARIES} ${BLAS_LIBRARIES} g2o_solver_csparse g2o_csparse_extension ${CSPARSE_LIBRARY} flann ${QGLVIEWER_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 #${CUDA_LIBRARIES} ${CUDA_cublas_LIBRARY} ${CUDA_cusparse_LIBRARY} solver_pcg_cusp pcg_cusp ${CUDA_SDK_LIBRARIES})
 
-
+# ADD_EXECUTABLE(ssa_viewer_rgba
+#   ssa_viewer_rgba.cpp
+#   ssa_3d_qglviewer_widget.cpp
+#   ${UI_HEADERS}
+#   ${UI_SOURCES}
+# )
+#
+# TARGET_LINK_LIBRARIES(ssa_viewer_rgba ssa_core types_3d g2o_types_slam3d g2o_types_icp g2o_stuff g2o_core g2o_solver_cholmod ${CHOLMOD_LIBRARIES} ${BLAS_LIBRARIES} g2o_solver_csparse g2o_csparse_extension ${CSPARSE_LIBRARY} flann ${QGLVIEWER_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+#
 
 INSTALL(TARGETS ssa_viewer_3d
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
