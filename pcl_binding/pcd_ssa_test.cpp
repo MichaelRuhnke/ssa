@@ -1406,7 +1406,7 @@ int main(int argc, char **argv)
 
   if(preAlign){
     ///align non keyframes with model
-    //alignNonKeyFrames(cloudNames, keyClouds, poses, keyframes, nonKeyframes, ssaGraph, vertices, maxCorrespondenceDistance, threads);
+    alignNonKeyFrames(cloudNames, keyClouds, poses, keyframes, nonKeyframes, ssaGraph, vertices, maxCorrespondenceDistance, threads);
   }
 
   ofstream poseFile("poses.txt");
